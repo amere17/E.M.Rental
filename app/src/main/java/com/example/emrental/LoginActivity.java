@@ -1,8 +1,12 @@
+/*
+Written by:Mohamad Amer & Muhammed Egbaryia
+Date: 4/03/2020
+Subject: Login Activity and validation functions
+*/
 package com.example.emrental;
-
+//------------------ Android Imports --------------------
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -21,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
+    //----------------------- Variables & Objects -------------------
     public EditText emailIdl, passwordIdl;
     Button signInBtn;
     TextView signUptv;
@@ -31,8 +35,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //-------------------- attaching firebase to the application ------------------
         FirebaseApp.initializeApp(this);
         fbAuth = FirebaseAuth.getInstance();
+        //--------------------- attaching objects with the XML file
         emailIdl = (EditText)findViewById(R.id.editText12);
         passwordIdl = (EditText)findViewById(R.id.editText10);
         signInBtn = (Button)findViewById(R.id.button);
@@ -49,11 +55,13 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+        //------------------------------ Sign In Button After Registration ---------------
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = emailIdl.getText().toString();
                 String pssd = passwordIdl.getText().toString();
+                //------------------ Email & Password inputs Validation ----------------
                 if(email.isEmpty())
                 {
                     emailIdl.setError("Please enter your email");
@@ -78,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+        //------------------- Button to move this activity to Sign Up Activity -------------------
         signUptv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -90,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
+    //--------------------- Function for Firebase Data ----------------------
     protected void onStart(){
         super.onStart();
         fbAuth.addAuthStateListener(mAuthL);
