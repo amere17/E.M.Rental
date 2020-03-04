@@ -1,5 +1,10 @@
+/*
+Written by:Mohamad Amer & Muhammed Egbaryia
+Date: 4/03/2020
+Subject: Register activity for new users in applications
+*/
 package com.example.emrental;
-
+//------------------ Android imports ----------------
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +25,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+    //----------------- Variables & Objects -------------------
     public EditText emailId, passwordId;
     Button signUpBtn;
     TextView signIntv;
@@ -31,12 +37,16 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         fbAuth = FirebaseAuth.getInstance();
+        //------------- attaching objects with XML File -------------
         emailId = (EditText)findViewById(R.id.editText2);
         passwordId = (EditText)findViewById(R.id.editText4);
         signUpBtn = (Button)findViewById(R.id.button);
         signIntv = (TextView)findViewById(R.id.textView);
+        //------------------ Sign Up button methods -------------------
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
+            //-------------- Sign Up inputs Validations ------------
+            //-------------- If all inputs valid move to login activity --------------
             public void onClick(View v) {
                 String email = emailId.getText().toString();
                 String pssd = passwordId.getText().toString();
@@ -66,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        //------------------ move to login activty while click on this text ------------------
         signIntv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
