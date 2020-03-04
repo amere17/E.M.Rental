@@ -1,3 +1,8 @@
+/*
+Written by:Mohamad Amer & Muhammed Egbaryia
+Date: 4/03/2020
+Subject: Sign In class for registered users
+*/
 package com.example.emrental;
 
 import androidx.appcompat.app.AppCompatActivity;
