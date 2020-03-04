@@ -1,7 +1,7 @@
 /*
 Written by:Mohamad Amer & Muhammed Egbaryia
 Date: 4/03/2020
-Subject: Register activity for new users in applications
+Subject: Register activity for new users in the application
 */
 package com.example.emrental;
 //------------------ Android imports ----------------
