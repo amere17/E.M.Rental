@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "973964650211",
+    "firebase_url": "https://emrental-29af1.firebaseio.com",
+    "project_id": "emrental-29af1",
+    "storage_bucket": "emrental-29af1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973964650211:android:7d71de7a306bc3222487d6",
+        "android_client_info": {
+          "package_name": "com.example.emrental"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973964650211-j4m2k3vqbbolmik00k3cfsm1qc1otq8o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4Fd86fr9kUYht1uJWwefJN8I6K5hTaXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973964650211-j4m2k3vqbbolmik00k3cfsm1qc1otq8o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

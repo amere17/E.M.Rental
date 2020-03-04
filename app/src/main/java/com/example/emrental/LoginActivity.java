@@ -1,0 +1,97 @@
+package com.example.emrental;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+public class LoginActivity extends AppCompatActivity {
+    public EditText emailIdl, passwordIdl;
+    Button signInBtn;
+    TextView signUptv;
+    FirebaseAuth fbAuth;
+    private FirebaseAuth.AuthStateListener mAuthL;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        FirebaseApp.initializeApp(this);
+        fbAuth = FirebaseAuth.getInstance();
+        emailIdl = (EditText)findViewById(R.id.editText12);
+        passwordIdl = (EditText)findViewById(R.id.editText10);
+        signInBtn = (Button)findViewById(R.id.button);
+        signUptv =(TextView)findViewById(R.id.textView);
+        mAuthL = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser mFireU = fbAuth.getCurrentUser();
+                if(mFireU != null){
+                    Toast.makeText(LoginActivity.this,"Registration completed successfully",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(LoginActivity.this,"Please Login",Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        signInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = emailIdl.getText().toString();
+                String pssd = passwordIdl.getText().toString();
+                if(email.isEmpty())
+                {
+                    emailIdl.setError("Please enter your email");
+                    emailIdl.requestFocus();
+                }
+                else if(pssd.isEmpty())
+                {
+                    emailIdl.setError("Please enter your password");
+                    emailIdl.requestFocus();
+                }else if(!pssd.isEmpty() && !email.isEmpty()){
+                    fbAuth.signInWithEmailAndPassword(email, pssd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(!task.isSuccessful()){
+                                Toast.makeText(LoginActivity.this,"Try to login again", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        signUptv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                ProgressDialog progressBar = ProgressDialog.show(LoginActivity.this, "Title",
+                        "Login Page");
+                Intent i = new Intent(LoginActivity.this,MainActivity.class);
+                startActivity(i);
+                return false;
+            }
+        });
+
+    }
+    protected void onStart(){
+        super.onStart();
+        fbAuth.addAuthStateListener(mAuthL);
+    }
+}
