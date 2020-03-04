@@ -1,7 +1,7 @@
 /*
 Written by:Mohamad Amer & Muhammed Egbaryia
 Date: 4/03/2020
-Subject: Sign In class for registered users
+Subject: Activity for add new tool to the list
 */
 package com.example.emrental;
 //---------------- Android imports ------------------------
