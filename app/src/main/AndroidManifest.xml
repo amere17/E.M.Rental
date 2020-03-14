@@ -2,8 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.emrental">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <permission android:name="com.example.emrental.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.example.emrental.permission.MAPS_RECEIVE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,11 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PaymentActivity"></activity>
+        <activity android:name=".PaymentActivity" android:theme="@style/Theme.AppCompat.Dialog"/>
         <activity android:name=".OrderActivity" />
-        <activity android:name=".AddActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".ProfileActivity" />
+        <activity android:name=".AddActivity" android:theme="@style/Theme.AppCompat.Dialog"/>
+        <activity android:name=".SearchActivity" android:theme="@style/Theme.AppCompat.Dialog"/>
+        <activity android:name=".ProfileActivity" android:theme="@style/Theme.AppCompat.Dialog"/>
         <activity android:name=".HomeActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
@@ -25,6 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/map_key"/>
     </application>
 
 </manifest>
