@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             String email, password, fullname, phone, paypal;
             @Override
             //-------------- Sign Up inputs Validations ------------
-            //-------------- If all inputs valid move to login activity --------------
+            //-------------- If all inputs valid, move to login activity --------------
             public void onClick(View v) {
                 email = emailId.getText().toString().trim();
                 password = passwordId.getText().toString().trim();
@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
                     passwordId.setError("Password must be >= 8");
                     return;
                 }
-             fbAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                //----------------------- Add the new user data to the firebase --------------
+                fbAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                  @Override
                  public void onComplete(@NonNull Task<AuthResult> task) {
                      if(task.isSuccessful()){

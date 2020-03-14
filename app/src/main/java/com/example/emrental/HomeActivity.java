@@ -1,7 +1,7 @@
 /*
 Written by:Mohamad Amer & Muhammed Egbaryia
 Date: 4/03/2020
-Subject: Sign In class for registered users
+Subject: The home display for the application
 */
 package com.example.emrental;
 //---------------- Android imports ------------------------
@@ -57,12 +57,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(addIntent);
             }
         });
-        //--------------- Show Tool Markers on the Map ------------------
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(HomeActivity.this);
 
 
     }
+    //--------------- Show the tools form the list in firebase on the map ------------------
     @Override
     public void onMapReady(GoogleMap googleMap){
         mMap = googleMap;
