@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 phone = phoneId.getText().toString().trim();
                 paypal = paypalId.getText().toString().trim();
 
-                if(TextUtils.isEmpty(email)){
+                if(TextUtils.isEmpty(email) && email.contains("@")){
                     emailId.setError("Email is Required.");
                     return;
                 }
@@ -86,14 +86,12 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 if(TextUtils.isEmpty(paypal)){
-                    paypalId.setError("PayPal.me is Required");
-                    SystemClock.sleep(4000);
-                    paypalId.setError("Search in Google: Create PayPal.me Account");
-                    SystemClock.sleep(4000);
+                    paypalId.setError("PayPal is Required");
+                    Toast.makeText(MainActivity.this, "\"Search in Google: How to Create a PayPal Account\"", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(!URLUtil.isValidUrl(paypal)){
-                    paypalId.setError("Please Enter Valid Url");
+                if(!paypal.contains("@")){
+                    paypalId.setError("Invalid PayPal account");
                     return;
                 }
                 if(password.length()<8){
@@ -109,12 +107,10 @@ public class MainActivity extends AppCompatActivity {
                          userId = fbAuth.getCurrentUser().getUid();
                          DocumentReference dr = fstore.collection("Users").document(userId);
                          Map<String,Object> user = new HashMap<>();
-                         Vector<String> deals = new Vector<>();
                          user.put("Full Name",fullname);
                          user.put("Email",email);
                          user.put("Phone",phone);
                          user.put("PayPal",paypal);
-                         user.put("Deals",deals);
                          dr.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                              @Override
                              public void onSuccess(Void aVoid) {
