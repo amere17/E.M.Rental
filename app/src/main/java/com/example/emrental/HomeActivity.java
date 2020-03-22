@@ -38,7 +38,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
     //------------- Variables & Objects -------------------
     GoogleMap mMap;
-    Button  AddToolBtn,ProfileBtn;
+    Button  AddToolBtn,ProfileBtn,SearchBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
     FusedLocationProviderClient client;
@@ -50,6 +50,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         //-------------- attach variables with XML file ----------
         ProfileBtn = (Button)findViewById(R.id.button11);
         AddToolBtn = (Button)findViewById(R.id.button12);
+        SearchBtn = (Button)findViewById(R.id.btnSearch);
         //-------------- method for Profile & Add Tool Button -------------
         ProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +63,13 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 Intent addIntent = new Intent(getApplicationContext(),AddActivity.class);
+                startActivity(addIntent);
+            }
+        });
+        SearchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent addIntent = new Intent(getApplicationContext(),SearchActivity.class);
                 startActivity(addIntent);
             }
         });

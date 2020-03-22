@@ -28,6 +28,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -36,6 +38,7 @@ public class AddActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
     private FusedLocationProviderClient client;
     private FirebaseFirestore mFireStore;
+    DatabaseReference ref;
     public Location mLocation ;
     FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
     RadioButton radioButton;
@@ -90,6 +93,7 @@ public class AddActivity extends AppCompatActivity {
         });
         //---------------- methods for clicking add button ------------
         //-- add a new tool with all the info to the firebase database -
+        ref = FirebaseDatabase.getInstance().getReference().child("tools");
         Add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,6 +119,7 @@ public class AddActivity extends AppCompatActivity {
 
                     }
                 });
+                ref.push().setValue(mToolList);
                 finish();
                 Intent i = new Intent(AddActivity.this,HomeActivity.class);
                 startActivity(i);
