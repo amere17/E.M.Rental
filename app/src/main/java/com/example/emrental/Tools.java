@@ -2,15 +2,15 @@ package com.example.emrental;
 
 import java.security.PrivateKey;
 
-public class tools {
+public class Tools {
     private String name;
     private String price;
     private String location;
     private String type;
     private String userid;
-    tools(){
+    Tools(){
     }
-    tools(String m_location, String m_name, String m_price, String m_type, String m_userid){
+    Tools(String m_location, String m_name, String m_price, String m_type, String m_userid){
         this.name = m_name;
         this.location = m_location;
         this.price = m_price;
@@ -27,12 +27,14 @@ public class tools {
         this.location = m_location;
     }
     public void setType(String m_type){
-        this.location = m_type;
+        this.type = m_type;
     }
+    public void setUserid(String m_userid){this.userid = m_userid;}
     public String getName(){return this.name;}
     public String getLocation(){return this.location;}
     public String getPrice(){return this.price;}
     public String getType(){return this.type;}
+    public String getUserid(){return this.userid;}
 
 
 }

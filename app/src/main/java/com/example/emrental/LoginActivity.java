@@ -47,12 +47,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser mFireU = fbAuth.getCurrentUser();
-                if(mFireU != null){
-                    Toast.makeText(LoginActivity.this,"Registration completed successfully",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Toast.makeText(LoginActivity.this,"Please Login",Toast.LENGTH_SHORT).show();
-                }
             }
         };
         //------------------------------ Sign In Button After Registration ---------------

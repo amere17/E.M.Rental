@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,13 +26,13 @@ public class SearchActivity extends AppCompatActivity {
     Button searchBtnItems;
     DatabaseReference dr;
     FirebaseDatabase firebasedatabase;
-    tools item;
+    Tools item;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_search);
-        item = new tools();
+        item = new Tools();
         etLocation = findViewById(R.id.editText5);
         etPrice = findViewById(R.id.editText7);
         searchBtnItems = findViewById(R.id.button2);
@@ -48,11 +47,8 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Toast.makeText(getApplicationContext(),"2", Toast.LENGTH_LONG).show();
                 for (DataSnapshot ds:dataSnapshot.getChildren()){
-                    item = ds.getValue(tools.class);
-                    Toast.makeText(getApplicationContext(), item.getName(), Toast.LENGTH_LONG).show();
-
+                    item = ds.getValue(Tools.class);
                     mArraylist.add(item.getName()+"\n"+item.getPrice()+" "+item.getType()+"\n"+item.getLocation());
                 }
                 lvItems.setAdapter(itemArrayAdapter);

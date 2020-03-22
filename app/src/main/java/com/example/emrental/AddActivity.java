@@ -116,7 +116,6 @@ public class AddActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(AddActivity.this, "Tool Saved", Toast.LENGTH_SHORT).show();
-
                     }
                 });
                 ref.push().setValue(mToolList);
