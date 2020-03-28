@@ -108,7 +108,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").toString()));
                     if ( currLocation !=null){
                         LatLng curLocation = new LatLng(currLocation.getLatitude(),currLocation.getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation,10), 5000, null);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation,13), 5000, null);
                     }
                     else{
                         Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
