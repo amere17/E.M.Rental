@@ -42,7 +42,6 @@ public class SearchActivity extends AppCompatActivity {
         lvItems.setAdapter(itemArrayAdapter);
         firebasedatabase = FirebaseDatabase.getInstance();
         dr = firebasedatabase.getReference("tools");
-        Toast.makeText(getApplicationContext(),"1", Toast.LENGTH_LONG).show();
         dr.addValueEventListener(new ValueEventListener() {
 
             @Override

@@ -74,8 +74,6 @@ public class AddActivity extends AppCompatActivity {
                      public void onSuccess(Location location) {
 
                         if(location != null){
-                            //mLocation.setLatitude(location.getLatitude());
-                            //mLocation.setLongitude(location.getLongitude());
                             tv.setText(location.getLatitude() + " " + location.getLongitude());
                         }
                         else{

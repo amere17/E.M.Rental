@@ -87,7 +87,6 @@ public class ProfileActivity extends AppCompatActivity {
                 for (DataSnapshot ds:dataSnapshot.getChildren()){
                     item = ds.getValue(Tools.class);
                     if(item.getUserid().equals(userId)) {
-                        Toast.makeText(getApplicationContext(),item.getUserid()+"  "+userId, Toast.LENGTH_SHORT).show();
                         mArraylist.add(item.getName() + "\n" + item.getPrice() + " " + item.getType() + "\n" + item.getLocation());
                     }
 
