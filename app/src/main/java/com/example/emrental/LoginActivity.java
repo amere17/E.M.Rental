@@ -66,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                     emailIdl.setError("Please enter your password");
                     emailIdl.requestFocus();
                 }else if(!pssd.isEmpty() && !email.isEmpty()){
+                    // --------- Check the sign in inputs if it match's the data in Firebase -------
                     fbAuth.signInWithEmailAndPassword(email, pssd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -73,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this,"Try to login again", Toast.LENGTH_SHORT).show();
                             }
                             else{
+                                finish();
                                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             }
                         }

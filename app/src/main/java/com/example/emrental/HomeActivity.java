@@ -7,10 +7,11 @@ package com.example.emrental;
 //---------------- Android imports ------------------------
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
@@ -21,14 +22,12 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -51,7 +50,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         ProfileBtn = (Button)findViewById(R.id.button11);
         AddToolBtn = (Button)findViewById(R.id.button12);
         SearchBtn = (Button)findViewById(R.id.btnSearch);
-        //-------------- method for Profile & Add Tool Button -------------
+        //-------------- method for User Profile Button -------------
         ProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +58,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(profIntent);
             }
         });
+        //-------------- method for Add Tool Button -------------
         AddToolBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +66,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(addIntent);
             }
         });
+        //-------------- method for Search Button -------------
         SearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,13 +74,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(addIntent);
             }
         });
+        //------------- request permission for the location service -----------
         requestPer();
         client = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        // ------------ Find the current user location ----------
         getCurrLocation();
 
+        // ------------ Methods for the view of the map ----------
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(HomeActivity.this);
     }
     private void getCurrLocation(){
         client.getLastLocation().addOnSuccessListener(HomeActivity.this, new OnSuccessListener<Location>() {
@@ -88,24 +94,40 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                   currLocation = location;
             }
         });
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(HomeActivity.this);
     }
-    //--------------- Show the tools form the list in firebase on the map ------------------
+    // --------------- Show the tools form the list in firebase on the map ------------------
     @Override
     public void onMapReady(GoogleMap googleMap){
         mMap = googleMap;
+        // ------------------ Read data from the tools list in Firebase ----------------------
+        // ------------------ Put markers on the map for all the tools  ----------------------
         toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     String location = documentSnapshot.get("location").toString();
                     Double mLat, mLong;
                     String parts[] = location.split(" ");
+                    // -------- Coordinates for each tool --------
                     mLat = Double.parseDouble(parts[0]);
                     mLong = Double.parseDouble(parts[1]);
-                    LatLng toolLocation = new LatLng(mLat,mLong);
-                    mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").toString()));
+                    LatLng toolLocation = new LatLng(mLat, mLong);
+                    // -------- Match the marker icon with the type of the tool ----------
+                    if (documentSnapshot.get("type").equals("Bike")) {
+                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_bike);
+                        mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").
+                                toString()).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                    } else if (documentSnapshot.get("type").equals("Car")) {
+                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_car);
+                        mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").
+                                toString()).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                    } else{
+                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_scooter);
+                        mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").
+                                toString()).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                    }
+                    // -------------------- Zoom in to the current user location -------------------
+                    // ------------- Error when there is a problem to read the current location ----
                     if ( currLocation !=null){
                         LatLng curLocation = new LatLng(currLocation.getLatitude(),currLocation.getLongitude());
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation,13), 5000, null);
@@ -122,5 +144,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void requestPer(){
         ActivityCompat.requestPermissions(this,new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION},1);
+    }
+    // -------- Function to create icon for each type of tool --------
+    public Bitmap icon_Bitmap(BitmapDrawable markerPath){
+        int height = 70;
+        int width = 70;
+        Bitmap b = markerPath.getBitmap();
+        return Bitmap.createScaledBitmap(b, width, height, false);
     }
 }

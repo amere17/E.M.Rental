@@ -1,7 +1,5 @@
 package com.example.emrental;
 
-import java.security.PrivateKey;
-
 public class Tools {
     private String name;
     private String price;
@@ -35,6 +33,4 @@ public class Tools {
     public String getPrice(){return this.price;}
     public String getType(){return this.type;}
     public String getUserid(){return this.userid;}
-
-
 }

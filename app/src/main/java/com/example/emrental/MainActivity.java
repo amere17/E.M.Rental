@@ -4,23 +4,19 @@ Date: 4/03/2020
 Subject: Register activity for new users in the application
 */
 package com.example.emrental;
-//------------------ Android imports ----------------
+// ------------------ Android imports ----------------
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -29,15 +25,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
-    //----------------- Variables & Objects -------------------
+    // ----------------- Variables & Objects -------------------
     public EditText emailId, passwordId, paypalId, fullnameId, phoneId;
     Button signUpBtn;
     TextView signIntv;
@@ -47,25 +39,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fbAuth = FirebaseAuth .getInstance();
+        // --------------- Check if the user already signed in ------------
+        if (fbAuth.getCurrentUser() != null) {
+            startActivity(new Intent(MainActivity.this, HomeActivity.class));
+            finish();
+        }
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
 
-        fbAuth = FirebaseAuth .getInstance();
         fstore = FirebaseFirestore.getInstance();
-        //------------- attaching objects with XML File -------------
-        emailId = (EditText)findViewById(R.id.editText2);
-        passwordId = (EditText)findViewById(R.id.editText4);
-        paypalId = (EditText)findViewById(R.id.editText9);
-        fullnameId= (EditText)findViewById(R.id.editText13);
-        phoneId = (EditText)findViewById(R.id.editText11);
-        signUpBtn = (Button)findViewById(R.id.button);
-        signIntv = (TextView)findViewById(R.id.textView);
-        //------------------ Sign Up button methods -------------------
+        // ------------- Attaching objects with XML File -------------
+        emailId = findViewById(R.id.editText2);
+        passwordId = findViewById(R.id.editText4);
+        paypalId = findViewById(R.id.editText9);
+        fullnameId= findViewById(R.id.editText13);
+        phoneId = findViewById(R.id.editText11);
+        signUpBtn = findViewById(R.id.button);
+        signIntv = findViewById(R.id.textView);
+        // ------------------ Sign Up button methods -------------------
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             String email, password, fullname, phone, paypal;
             @Override
-            //-------------- Sign Up inputs Validations ------------
-            //-------------- If all inputs valid, move to login activity --------------
+            // -------------- Sign Up inputs Validations ------------
+            // -------------- If all inputs valid, move to login activity --------------
             public void onClick(View v) {
                 email = emailId.getText().toString().trim();
                 password = passwordId.getText().toString().trim();
@@ -98,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     passwordId.setError("Password must be >= 8");
                     return;
                 }
-                //----------------------- Add the new user data to the firebase --------------
+                // ----------------------- Add the new user data to the Firebase --------------
                 fbAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                  @Override
                  public void onComplete(@NonNull Task<AuthResult> task) {
@@ -127,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
              });
             }
         });
-        //------------------ move to login activty while click on this text ------------------
+        // ------------------ Moving to the login page by Clicking the TextView------------------
         signIntv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

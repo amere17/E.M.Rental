@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -39,7 +40,6 @@ public class AddActivity extends AppCompatActivity {
     private FusedLocationProviderClient client;
     private FirebaseFirestore mFireStore;
     DatabaseReference ref;
-    public Location mLocation ;
     FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
     RadioButton radioButton;
     @Override
@@ -57,12 +57,12 @@ public class AddActivity extends AppCompatActivity {
         final Button Add = findViewById(R.id.button8);
         final EditText toolName = findViewById(R.id.editText);
         final EditText toolPrice = findViewById(R.id.editText3);
-        ImageView toolPic = findViewById(R.id.imageView4);
+        //ImageView toolPic = findViewById(R.id.imageView4);
         final TextView tv = findViewById(R.id.textView2);
         final RadioGroup mType = findViewById(R.id.type);
         //----------------- Call function to request permission for Location service ---------
         requestPer();
-        //----------------- current location for the item to add a marker on the map -------
+        //----------------- Current location for the item to add a marker on the map -------
         Cord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,30 +96,40 @@ public class AddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String mUserUid = currentFirebaseUser.getUid();
-                //Tool tool = new Tool(mToolName,mToolPrice,mType);
                 String mToolName = toolName.getText().toString();
                 String mToolPrice = toolPrice.getText().toString();
                 int mRadioOpt = mType.getCheckedRadioButtonId();
                 radioButton = findViewById(mRadioOpt);
-                String mtype = radioButton.getText().toString();
+                String m_location = tv.getText().toString();
+                // Validation to add tool with the right inputs
+                if(!TextUtils.isEmpty(mToolName)&& !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location)&& radioButton.isChecked()){
 
-                // map for all the data to add the tool easily to collection in firebase "tools"
-                Map<String,String> mToolList = new HashMap<>();
-                mToolList.put("name",mToolName);
-                mToolList.put("price",mToolPrice);
-                mToolList.put("userid",mUserUid);
-                mToolList.put("type",mtype);
-                mToolList.put("location",tv.getText().toString());
-                mFireStore.collection("tools").document().set(mToolList).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(AddActivity.this, "Tool Saved", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                ref.push().setValue(mToolList);
-                finish();
-                Intent i = new Intent(AddActivity.this,HomeActivity.class);
-                startActivity(i);
+                    // Add new tool to realtime database and the collection firebase "tools"
+                    Map<String,String> mToolList = new HashMap<>();
+                    mToolList.put("name",mToolName);
+                    mToolList.put("price",mToolPrice);
+                    mToolList.put("userid",mUserUid);
+                    mToolList.put("type",radioButton.getText().toString());
+                    mToolList.put("location",tv.getText().toString());
+                    ref.push().setValue(mToolList);
+                    mFireStore.collection("tools").document().set(mToolList).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(AddActivity.this, "Tool Saved", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    // Stop this activity and return to the Home Activity
+                    finish();
+                    Intent i = new Intent(AddActivity.this,HomeActivity.class);
+                    startActivity(i);
+
+                }
+                else
+                {
+                    Toast.makeText(AddActivity.this, "All the inputs required", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
     }

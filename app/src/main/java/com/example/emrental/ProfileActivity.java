@@ -19,8 +19,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -66,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
-        //---------------- get all the data for the current user and display it ------
+        //------------ get all the data for the current user to display in the profile ------
         DocumentReference dr = fstore.collection("Users").document(userId);
         dr.addSnapshotListener(ProfileActivity.this, new EventListener<DocumentSnapshot>() {
             @Override
