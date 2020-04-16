@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "646303025531",
+    "firebase_url": "https://trulse-53421.firebaseio.com",
+    "project_id": "trulse-53421",
+    "storage_bucket": "trulse-53421.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646303025531:android:6dd9a0771ffec6cde815de",
+        "android_client_info": {
+          "package_name": "com.amere.trulse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "646303025531-9som1ggj8t2sqdjs22a4iqaecvhhui9e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzpd-1ryoKIDf0em3Lq1doao1kjRdzkeI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "646303025531-9som1ggj8t2sqdjs22a4iqaecvhhui9e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
