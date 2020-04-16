@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     TextView signUptv;
     FirebaseAuth fbAuth;
     private FirebaseAuth.AuthStateListener mAuthL;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

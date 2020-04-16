@@ -26,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -115,22 +116,19 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // -------- Match the marker icon with the type of the tool ----------
                     if (documentSnapshot.get("type").equals("Bike")) {
                         BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_bike);
-                        mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").
-                                toString()).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
                     } else if (documentSnapshot.get("type").equals("Car")) {
                         BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_car);
-                        mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").
-                                toString()).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
                     } else{
                         BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_scooter);
-                        mMap.addMarker(new MarkerOptions().position(toolLocation).title(documentSnapshot.get("name").
-                                toString()).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
                     }
                     // -------------------- Zoom in to the current user location -------------------
                     // ------------- Error when there is a problem to read the current location ----
-                    if ( currLocation !=null){
+                   if ( currLocation !=null){
                         LatLng curLocation = new LatLng(currLocation.getLatitude(),currLocation.getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation,13), 5000, null);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 17));
                     }
                     else{
                         Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
@@ -138,8 +136,17 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent i = new Intent(HomeActivity.this,OrderActivity.class);
+                Bundle b = new Bundle();
+                i.putExtra("ToolId",marker.getSnippet());
+                startActivity(i);
+                return false;
+            }
+        });
         mMap.setMyLocationEnabled(true);
-
     }
     private void requestPer(){
         ActivityCompat.requestPermissions(this,new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION,

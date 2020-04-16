@@ -30,11 +30,11 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     // ----------------- Variables & Objects -------------------
-    public EditText emailId, passwordId, paypalId, fullnameId, phoneId;
+    EditText emailId, passwordId, paypalId, fullnameId, phoneId;
     Button signUpBtn;
     TextView signIntv;
     String userId;
-    public FirebaseAuth fbAuth;
+    FirebaseAuth fbAuth;
     FirebaseFirestore fstore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                          });
                      }
                      else {
-                         Toast.makeText(MainActivity.this,"Error.", Toast.LENGTH_SHORT).show();
+                         Toast.makeText(MainActivity.this,"Email is already existed", Toast.LENGTH_SHORT).show();
                      }
                  }
              });

@@ -37,8 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 public class AddActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
-    private FusedLocationProviderClient client;
-    private FirebaseFirestore mFireStore;
+    FusedLocationProviderClient client;
+    FirebaseFirestore mFireStore;
     DatabaseReference ref;
     FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
     RadioButton radioButton;
