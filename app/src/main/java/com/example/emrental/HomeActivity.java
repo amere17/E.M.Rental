@@ -29,20 +29,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import javax.annotation.Nullable;
 
 //-------------------- Main Activity for users after login ------------------
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
     //------------- Variables & Objects -------------------
     GoogleMap mMap;
+    FirebaseAuth fAuth;
     Button  AddToolBtn,ProfileBtn,SearchBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
     FusedLocationProviderClient client;
     public Location currLocation;
+    //boolean UserOwner= false;
+    //boolean hide = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,7 +139,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // ------------- Error when there is a problem to read the current location ----
                    if ( currLocation !=null){
                         LatLng curLocation = new LatLng(currLocation.getLatitude(),currLocation.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 17));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 2));
                     }
                     else{
                         Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
@@ -139,8 +150,17 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Intent i = new Intent(HomeActivity.this,OrderActivity.class);
-                Bundle b = new Bundle();
+                FirebaseFirestore fstore;
+                DocumentReference dr;
+                final Intent i = new Intent(HomeActivity.this,OrderActivity.class);
+                fstore = FirebaseFirestore.getInstance();
+                dr = fstore.collection("tools").document(marker.getSnippet());
+                dr.addSnapshotListener(HomeActivity.this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        fAuth = FirebaseAuth.getInstance();
+                    }
+                });
                 i.putExtra("ToolId",marker.getSnippet());
                 startActivity(i);
                 return false;

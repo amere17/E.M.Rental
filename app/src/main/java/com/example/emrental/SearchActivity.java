@@ -33,7 +33,7 @@ public class SearchActivity extends AppCompatActivity {
     Button searchBtnItems;
     DatabaseReference dr;
     FirebaseDatabase firebasedatabase;
-    Tools item;
+    Tool item;
     CheckBox cbBike,cbCar,cbScooter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class SearchActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_search);
         //-------------- Attaching variables & objects with XML file ----------
-        item = new Tools();
+        item = new Tool();
         etLocation = findViewById(R.id.editText5);
         etPrice = findViewById(R.id.editText7);
         searchBtnItems = findViewById(R.id.button2);
@@ -63,7 +63,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds:dataSnapshot.getChildren()){
-                    item = ds.getValue(Tools.class);
+                    item = ds.getValue(Tool.class);
                     mArraylist.add(item.getName()+"\n"+item.getPrice()+" "+item.getType()+"\n"+item.getLocation());
                 }
                 lvItems.setAdapter(itemArrayAdapter);

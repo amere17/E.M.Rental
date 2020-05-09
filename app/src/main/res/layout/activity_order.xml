@@ -18,6 +18,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <Button
+            android:id="@+id/StatusBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="388dp"
+            android:text="inProgress" />
+
+        <Button
+            android:id="@+id/bOrder"
+            android:layout_width="371dp"
+            android:layout_height="55dp"
+            android:layout_below="@+id/imageView"
+            android:layout_marginTop="54dp"
+            android:text="Order" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="308dp"
             android:layout_height="323dp"
@@ -26,11 +42,11 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="28dp"
-            android:layout_marginLeft="28dp"
-            android:layout_marginEnd="38dp"
-            android:layout_marginRight="38dp"
-            android:layout_marginBottom="65dp">
+            android:layout_marginStart="33dp"
+            android:layout_marginLeft="33dp"
+            android:layout_marginEnd="33dp"
+            android:layout_marginRight="33dp"
+            android:layout_marginBottom="-6dp">
 
             <TextView
                 android:id="@+id/tType"
@@ -101,6 +117,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/tName"
                 app:layout_constraintVertical_bias="0.616" />
 
+            <TextView
+                android:id="@+id/tOwner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="13dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tPrice"
+                app:layout_constraintVertical_bias="0.564" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
@@ -114,14 +144,5 @@
             android:background="@mipmap/ic_launcher_round" />
 
     </RelativeLayout>
-
-    <Button
-        android:id="@+id/bOrder"
-        android:layout_width="371dp"
-        android:layout_height="55dp"
-        android:text="Order"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

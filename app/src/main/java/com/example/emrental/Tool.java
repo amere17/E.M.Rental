@@ -1,19 +1,21 @@
 package com.example.emrental;
 
-public class Tools {
+public class Tool {
     private String name;
     private String price;
     private String location;
     private String type;
     private String userid;
-    Tools(){
+    private int status;
+    Tool(){
     }
-    Tools(String m_location, String m_name, String m_price, String m_type, String m_userid){
+    Tool(String m_location, String m_name, String m_price, String m_type, String m_userid,int m_available){
         this.name = m_name;
         this.location = m_location;
         this.price = m_price;
         this.type = m_type;
         this.userid = m_userid;
+        this.status = m_available;
     }
     public void setName(String m_name){
         this.name = m_name;
@@ -33,4 +35,12 @@ public class Tools {
     public String getPrice(){return this.price;}
     public String getType(){return this.type;}
     public String getUserid(){return this.userid;}
+
+    public int getAvailable() {
+        return status;
+    }
+
+    public void setAvailable(int available) {
+        this.status = available;
+    }
 }

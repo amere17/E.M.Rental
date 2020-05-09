@@ -111,6 +111,7 @@ public class AddActivity extends AppCompatActivity {
                     mToolList.put("userid",mUserUid);
                     mToolList.put("type",radioButton.getText().toString());
                     mToolList.put("location",tv.getText().toString());
+                    mToolList.put("status","1");
                     ref.push().setValue(mToolList);
                     mFireStore.collection("tools").document().set(mToolList).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
