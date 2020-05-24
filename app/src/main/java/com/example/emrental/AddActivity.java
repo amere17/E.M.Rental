@@ -47,6 +47,7 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_add);
+
         //----------------- implement Firebase "FIRESTORE" & location client ------------
         mFireStore = FirebaseFirestore.getInstance();
         FirebaseFirestore.setLoggingEnabled(true);
@@ -75,8 +76,11 @@ public class AddActivity extends AppCompatActivity {
 
                         if(location != null){
                             tv.setText(location.getLatitude() + " " + location.getLongitude());
+                            Toast.makeText(AddActivity.this, "Coord: "+location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+
                         }
                         else{
+                            Toast.makeText(AddActivity.this, "GPS Error", Toast.LENGTH_SHORT).show();
                          }
                     }
                 });

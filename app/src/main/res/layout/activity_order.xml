@@ -10,8 +10,8 @@
 
     <RelativeLayout
         android:id="@+id/relativeLayout2"
-        android:layout_width="374dp"
-        android:layout_height="643dp"
+        android:layout_width="376dp"
+        android:layout_height="698dp"
         android:background="#066255"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.526"
@@ -24,14 +24,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="388dp"
-            android:text="inProgress" />
+            android:text="No Order" />
 
         <Button
             android:id="@+id/bOrder"
             android:layout_width="371dp"
             android:layout_height="55dp"
             android:layout_below="@+id/imageView"
-            android:layout_marginTop="54dp"
+            android:layout_marginTop="45dp"
             android:text="Order" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,11 +42,11 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="33dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginEnd="33dp"
-            android:layout_marginRight="33dp"
-            android:layout_marginBottom="-6dp">
+            android:layout_marginStart="31dp"
+            android:layout_marginLeft="31dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginBottom="59dp">
 
             <TextView
                 android:id="@+id/tType"
@@ -90,13 +90,13 @@
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/paypal"
-                android:layout_marginTop="164dp"
+                android:layout_marginTop="136dp"
                 android:gravity="fill"
                 android:textColor="#FFFFFF"
                 android:textSize="13dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.511"
+                app:layout_constraintHorizontal_bias="0.525"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tName" />
 
@@ -119,8 +119,8 @@
 
             <TextView
                 android:id="@+id/tOwner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="17dp"
                 android:gravity="center"
                 android:textColor="#FFFFFF"
                 android:textSize="13dp"
@@ -129,7 +129,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tPrice"
-                app:layout_constraintVertical_bias="0.564" />
+                app:layout_constraintVertical_bias="0.272" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

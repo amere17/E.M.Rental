@@ -5,8 +5,10 @@ Subject: The home display for the application
 */
 package com.example.emrental;
 //---------------- Android imports ------------------------
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,7 +48,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     //------------- Variables & Objects -------------------
     GoogleMap mMap;
     FirebaseAuth fAuth;
-    Button  AddToolBtn,ProfileBtn,SearchBtn;
+    Button AddToolBtn, ProfileBtn, SearchBtn;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
     FusedLocationProviderClient client;
@@ -59,14 +61,14 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         //-------------- attach variables with XML file ----------
-        ProfileBtn = (Button)findViewById(R.id.button11);
-        AddToolBtn = (Button)findViewById(R.id.button12);
-        SearchBtn = (Button)findViewById(R.id.btnSearch);
+        ProfileBtn = (Button) findViewById(R.id.button11);
+        AddToolBtn = (Button) findViewById(R.id.button12);
+        SearchBtn = (Button) findViewById(R.id.btnSearch);
         //-------------- method for User Profile Button -------------
         ProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent profIntent = new Intent(getApplicationContext(),ProfileActivity.class);
+                Intent profIntent = new Intent(getApplicationContext(), ProfileActivity.class);
                 startActivity(profIntent);
             }
         });
@@ -74,7 +76,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         AddToolBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent addIntent = new Intent(getApplicationContext(),AddActivity.class);
+                Intent addIntent = new Intent(getApplicationContext(), AddActivity.class);
                 startActivity(addIntent);
             }
         });
@@ -82,7 +84,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         SearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent addIntent = new Intent(getApplicationContext(),SearchActivity.class);
+                Intent addIntent = new Intent(getApplicationContext(), SearchActivity.class);
                 startActivity(addIntent);
             }
         });
@@ -96,27 +98,29 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         getCurrLocation();
 
         // ------------ Methods for the view of the map ----------
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(HomeActivity.this);
     }
-    private void getCurrLocation(){
+
+    private void getCurrLocation() {
         client.getLastLocation().addOnSuccessListener(HomeActivity.this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                  currLocation = location;
+                currLocation = location;
             }
         });
     }
+
     // --------------- Show the tools form the list in firebase on the map ------------------
     @Override
-    public void onMapReady(GoogleMap googleMap){
+    public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // ------------------ Read data from the tools list in Firebase ----------------------
         // ------------------ Put markers on the map for all the tools  ----------------------
         toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     String location = documentSnapshot.get("location").toString();
                     Double mLat, mLong;
                     String parts[] = location.split(" ");
@@ -126,22 +130,21 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng toolLocation = new LatLng(mLat, mLong);
                     // -------- Match the marker icon with the type of the tool ----------
                     if (documentSnapshot.get("type").equals("Bike")) {
-                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_bike);
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_bike);
                         mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
                     } else if (documentSnapshot.get("type").equals("Car")) {
-                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_car);
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_car);
                         mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                    } else{
-                        BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.icon_scooter);
+                    } else {
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_scooter);
                         mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
                     }
                     // -------------------- Zoom in to the current user location -------------------
                     // ------------- Error when there is a problem to read the current location ----
-                   if ( currLocation !=null){
-                        LatLng curLocation = new LatLng(currLocation.getLatitude(),currLocation.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 2));
-                    }
-                    else{
+                    if (currLocation != null) {
+                        LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 7));
+                    } else {
                         Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -152,7 +155,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             public boolean onMarkerClick(Marker marker) {
                 FirebaseFirestore fstore;
                 DocumentReference dr;
-                final Intent i = new Intent(HomeActivity.this,OrderActivity.class);
+                final Intent i = new Intent(HomeActivity.this, OrderActivity.class);
                 fstore = FirebaseFirestore.getInstance();
                 dr = fstore.collection("tools").document(marker.getSnippet());
                 dr.addSnapshotListener(HomeActivity.this, new EventListener<DocumentSnapshot>() {
@@ -161,21 +164,23 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                         fAuth = FirebaseAuth.getInstance();
                     }
                 });
-                i.putExtra("ToolId",marker.getSnippet());
+                i.putExtra("ToolId", marker.getSnippet());
                 startActivity(i);
                 return false;
             }
         });
         mMap.setMyLocationEnabled(true);
     }
-    private void requestPer(){
-        ActivityCompat.requestPermissions(this,new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION},1);
+
+    private void requestPer() {
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
     }
+
     // -------- Function to create icon for each type of tool --------
-    public Bitmap icon_Bitmap(BitmapDrawable markerPath){
-        int height = 70;
-        int width = 70;
+    public Bitmap icon_Bitmap(BitmapDrawable markerPath) {
+        int height = 100;
+        int width = 100;
         Bitmap b = markerPath.getBitmap();
         return Bitmap.createScaledBitmap(b, width, height, false);
     }

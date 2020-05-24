@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static java.lang.Math.min;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,6 +24,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,29 +34,32 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class OrderActivity extends AppCompatActivity {
-    DatabaseReference ref,ref2;
-    DocumentReference dr,dr2;
-    private Button OrderBtn,StatusBtn;
+    DatabaseReference ref, ref2;
+    DocumentReference dr, dr2;
+    private Button OrderBtn, StatusBtn;
     FirebaseFirestore fstore;
-    TextView tName,tPrice,tLocation,tType,tOwner;
+    TextView tName, tPrice, tLocation, tType, tOwner;
     Tool item;
     Order order;
     FirebaseAuth fAuth;
     public String userIdB;
+    public String dealId;
     public int c = 0;
     public Date startDate;
     public Date endDate;
+    public Date orderDate;
     public long totalDealTime;
-    SimpleDateFormat simpleDate =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public String userIdA;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
         ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         ref2 = FirebaseDatabase.getInstance().getReference().child("tools");
-        StatusBtn = (Button)findViewById(R.id.StatusBtn);
-        OrderBtn = (Button)findViewById(R.id.bOrder);
+        StatusBtn = (Button) findViewById(R.id.StatusBtn);
+        OrderBtn = (Button) findViewById(R.id.bOrder);
         tName = findViewById(R.id.tName);
         tPrice = findViewById(R.id.tPrice);
         tLocation = findViewById(R.id.tLocation);
@@ -61,57 +67,54 @@ public class OrderActivity extends AppCompatActivity {
         tOwner = findViewById(R.id.tOwner);
         final String toolId = getIntent().getExtras().getString("ToolId");
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            //Go to login
-        }
-        else{
+        } else {
             userIdB = FirebaseAuth.getInstance().getCurrentUser().getUid();
         }
-        if(userIdB ==  FirebaseAuth.getInstance().getCurrentUser().getUid())
+        if (userIdB == FirebaseAuth.getInstance().getCurrentUser().getUid())
             StatusBtn.setVisibility(View.INVISIBLE);
         fstore = FirebaseFirestore.getInstance();
         dr = fstore.collection("tools").document(toolId);
         dr.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                    tName.setText(documentSnapshot.getString("name"));
-                    tPrice.setText(documentSnapshot.getString("price"));
-                    tLocation.setText(documentSnapshot.getString("location"));
-                    tType.setText(documentSnapshot.getString("type"));
-                    userIdA = documentSnapshot.getString("userid");
-
-
+            public void onEvent(@Nullable final DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                tName.setText(documentSnapshot.getString("name"));
+                tPrice.setText(documentSnapshot.getString("price"));
+                tLocation.setText(documentSnapshot.getString("location"));
+                tType.setText(documentSnapshot.getString("type"));
+                userIdA = documentSnapshot.getString("userid");
                 dr2 = fstore.collection("Users").document(documentSnapshot.getString("userid"));
-                    dr2.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                            String owner = tOwner.getText()+" "+ documentSnapshot.getString("Full Name");
-                            tOwner.setText("Renter: "+owner.toUpperCase());
-                        }
-                    });
-                if(documentSnapshot.getString("status").equals("0")){
+                dr2.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        String owner = tOwner.getText() + " " + documentSnapshot.getString("Full Name");
+                        tOwner.setText("Renter: " + owner.toUpperCase());
+                    }
+                });
+                if (documentSnapshot.getString("status").equals("0")) {
                     StatusBtn.setText("End");
-                    OrderBtn.setText("Not Available");
+                    OrderBtn.setText("InProgress");
                     OrderBtn.setClickable(false);
-                }
-                else{
+                } else {
                     StatusBtn.setText("InProgress");
                     OrderBtn.setText("Order");
                     OrderBtn.setClickable(true);
                 }
-                if(userIdA.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                if (userIdA.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                     StatusBtn.setVisibility(View.VISIBLE);
                     OrderBtn.setVisibility(View.INVISIBLE);
                 }
+                if (documentSnapshot.getString("status").equals("1") && !userIdB.equals(userIdA)) {
+                    updateStatus();
+                }
             }
-
         });
 
 
         tOwner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(OrderActivity.this,ProfileActivity.class);
-                i.putExtra("UserId",userIdA);
+                Intent i = new Intent(OrderActivity.this, ProfileActivity.class);
+                i.putExtra("UserId", userIdA);
                 startActivity(i);
                 finish();
             }
@@ -120,16 +123,16 @@ public class OrderActivity extends AppCompatActivity {
         OrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String,String> mToolList = new HashMap<>();
-                mToolList.put("Owner",userIdA);
-                mToolList.put("User",userIdB);
-                mToolList.put("ToolId",toolId);
-                mToolList.put("Status","A");
-                mToolList.put("start","null");
-                mToolList.put("end","null");
-                mToolList.put("totalPrice","null");
+                Map<String, String> mToolList = new HashMap<>();
+                mToolList.put("Owner", userIdA);
+                mToolList.put("User", userIdB);
+                mToolList.put("ToolId", toolId);
+                mToolList.put("Status", "A");
+                mToolList.put("start", "null");
+                mToolList.put("end", "null");
+                mToolList.put("totalPrice", "null");
                 ref.push().setValue(mToolList);
-
+                finish();
             }
         });
 
@@ -140,31 +143,38 @@ public class OrderActivity extends AppCompatActivity {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds:dataSnapshot.getChildren()){
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             order = ds.getValue(Order.class);
-                            if(order.getToolId().equals(toolId)){
-                                if(order.getStatus().equals("A")){
+                            if (order.getToolId().equals(toolId)) {
+                                dealId = ds.getKey();
+                                if (order.getStatus().equals("A")) {
                                     startDate = Calendar.getInstance().getTime();
                                     ref.child(ds.getKey()).child("Status").setValue("B");
-                                    String timestamp = simpleDate.format(startDate);
-                                    ref.child(ds.getKey()).child("start").setValue(timestamp);
+                                    String timestamp = formatter.format(startDate);
+                                    ref.child(dealId).child("start").setValue(timestamp);
                                     StatusBtn.setText("End");
-                                    OrderBtn.setText("Not Available");
-                                    dr.update("status","0");
+                                    OrderBtn.setText("InProgress");
+                                    dr.update("status", "0");
                                     OrderBtn.setClickable(false);
-                                    break;
                                 }
-                                else if(order.getStatus().equals("B")){
+                                if (order.getStatus().equals("B")) {
                                     endDate = Calendar.getInstance().getTime();
+                                    dr.update("status", "1");
                                     ref.child(ds.getKey()).child("Status").setValue("C");
-                                    String timestamp = simpleDate.format(endDate);
-                                    dr.update("status","1");
+                                    String timestamp = formatter.format(endDate);
                                     ref.child(ds.getKey()).child("end").setValue(timestamp);
-                                    break;
+                                    if (order.getToolId().equals(toolId.trim()) && userIdB.equals(order.getOwner().trim())) {
+                                        updateStatus();
+                                        Toast.makeText(OrderActivity.this,
+                                                "Done! Payout will appear in your PayPal Account", Toast.LENGTH_LONG).show();
+                                    }
                                 }
+
+                                finish();
                             }
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -172,6 +182,69 @@ public class OrderActivity extends AppCompatActivity {
                 });
             }
         });
+
+    }
+
+    void updateStatus() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    order = ds.getValue(Order.class);
+                    if (userIdB.equals(order.getUser())
+                            && (order.getStatus().trim().equals("C"))) {
+                        try {
+                            String mstr = getTotal(formatter.parse(order.getEnd()),
+                                    formatter.parse(order.getStart()), tPrice.getText().toString().trim());
+                            ref.child(ds.getKey()).child("totalPrice").setValue(mstr);
+                            order.setTotalPrice(mstr);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        Intent i = new Intent(OrderActivity.this, PaymentActivity.class);
+                        i.putExtra("StartDate", order.getStart());
+                        i.putExtra("EndDate", order.getEnd());
+                        i.putExtra("OwnerTool", order.getOwner());
+                        i.putExtra("Total", order.getTotalPrice());
+                        ref.child(ds.getKey()).child("Status").setValue("D");
+                        startActivity(i);
+                        finish();
+                        break;
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public String getTotal(Date end, Date start, String price) {
+        Date e,s;
+        String str = null;
+        double total;
+        double mprice = Double.parseDouble(price);
+        long diff = end.getTime() - start.getTime();
+        long seconds = diff / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+        double m = (double) minutes;
+        double h = (double) hours;
+        double d = (double) days;
+        total = (m / 60 + h + d * 24) * mprice;
+        str = String.format("%.2f", total);
+
+
+        return str;
+    }
+
+    public String getDiffDates(long day, long hours, long minutes) {
+        String str = day + ":" + hours + ":" + minutes;
+        return str;
     }
 
 }
