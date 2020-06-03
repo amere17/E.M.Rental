@@ -29,25 +29,21 @@ public class UpdateProfile extends AppCompatDialogFragment {
         }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String em = emedt.getText().toString();
                 String ph = pedt.getText().toString();
                 String pp = ppedt.getText().toString();
                 String fn = fnedt.getText().toString();
-                listner.applyTexts(pp, fn, ph, em);
+                listner.applyTexts(pp, fn, ph);
             }
         });
         ppedt = view.findViewById(R.id.paypalEdt);
-        emedt = view.findViewById(R.id.emailEdt);
         pedt = view.findViewById(R.id.phoneEdt);
         fnedt = view.findViewById(R.id.fullnameEdt);
         String fullName = getArguments().getString("FullName");
         String payPal = getArguments().getString("PayPal");
-        String email = getArguments().getString("Email");
         String phone = getArguments().getString("Phone");
         ppedt.setText(payPal);
         fnedt.setText(fullName);
         pedt.setText(phone);
-        emedt.setText(email);
         return builder.create();
     }
 
@@ -59,6 +55,6 @@ public class UpdateProfile extends AppCompatDialogFragment {
     }
 
     public interface dialogListner {
-        void applyTexts(String paypal, String fullname, String phone, String email);
+        void applyTexts(String paypal, String fullname, String phone);
     }
 }

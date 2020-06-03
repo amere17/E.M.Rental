@@ -4,14 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import static java.lang.Math.min;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,25 +39,24 @@ import javax.annotation.Nullable;
 public class OrderActivity extends AppCompatActivity {
     DatabaseReference ref, ref2;
     DocumentReference dr, dr2;
-    private Button OrderBtn, StatusBtn;
+    Button OrderBtn, StatusBtn,DeleteTool;
     FirebaseFirestore fstore;
     TextView tName, tPrice, tLocation, tType, tOwner;
-    Tool item;
     Order order;
-    FirebaseAuth fAuth;
     public String userIdB;
     public String dealId;
-    public int c = 0;
+    String toolId,id;
     public Date startDate;
     public Date endDate;
-    public Date orderDate;
-    public long totalDealTime;
+
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public String userIdA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.activity_order);
         ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         ref2 = FirebaseDatabase.getInstance().getReference().child("tools");
@@ -65,46 +67,58 @@ public class OrderActivity extends AppCompatActivity {
         tLocation = findViewById(R.id.tLocation);
         tType = findViewById(R.id.tType);
         tOwner = findViewById(R.id.tOwner);
-        final String toolId = getIntent().getExtras().getString("ToolId");
+        DeleteTool = findViewById(R.id.delToolbtn);
+        toolId = getIntent().getExtras().getString("ToolId");
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
         } else {
             userIdB = FirebaseAuth.getInstance().getCurrentUser().getUid();
         }
-        if (userIdB == FirebaseAuth.getInstance().getCurrentUser().getUid())
+        if (userIdB == FirebaseAuth.getInstance().getCurrentUser().getUid()) {
             StatusBtn.setVisibility(View.INVISIBLE);
+            DeleteTool.setVisibility(View.INVISIBLE);
+        }
         fstore = FirebaseFirestore.getInstance();
         dr = fstore.collection("tools").document(toolId);
         dr.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable final DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                tName.setText(documentSnapshot.getString("name"));
-                tPrice.setText(documentSnapshot.getString("price"));
-                tLocation.setText(documentSnapshot.getString("location"));
-                tType.setText(documentSnapshot.getString("type"));
-                userIdA = documentSnapshot.getString("userid");
-                dr2 = fstore.collection("Users").document(documentSnapshot.getString("userid"));
-                dr2.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                        String owner = tOwner.getText() + " " + documentSnapshot.getString("Full Name");
-                        tOwner.setText("Renter: " + owner.toUpperCase());
+                if (documentSnapshot.exists()) {
+                    tName.setText(documentSnapshot.getString("name"));
+                    tPrice.setText(documentSnapshot.getString("price"));
+                    tLocation.setText(documentSnapshot.getString("address"));
+                    tType.setText(documentSnapshot.getString("type"));
+                    userIdA = documentSnapshot.getString("userid");
+                    dr2 = fstore.collection("Users").document(documentSnapshot.getString("userid"));
+                    dr2.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                            String owner = tOwner.getText() + " " + documentSnapshot.getString("Full Name");
+                            tOwner.setText(owner);
+                        }
+                    });
+                    //String currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    if (userIdA.equals(userIdB)) {
+                        StatusBtn.setVisibility(View.VISIBLE);
+                        OrderBtn.setVisibility(View.INVISIBLE);
+                        DeleteTool.setVisibility(View.VISIBLE);
+                    } else {
+                        OrderBtn.setVisibility(View.VISIBLE);
+                        StatusBtn.setVisibility(View.INVISIBLE);
+                        DeleteTool.setVisibility(View.INVISIBLE);
                     }
-                });
-                if (documentSnapshot.getString("status").equals("0")) {
-                    StatusBtn.setText("End");
-                    OrderBtn.setText("InProgress");
-                    OrderBtn.setClickable(false);
-                } else {
-                    StatusBtn.setText("InProgress");
-                    OrderBtn.setText("Order");
-                    OrderBtn.setClickable(true);
-                }
-                if (userIdA.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                    StatusBtn.setVisibility(View.VISIBLE);
-                    OrderBtn.setVisibility(View.INVISIBLE);
-                }
-                if (documentSnapshot.getString("status").equals("1") && !userIdB.equals(userIdA)) {
-                    updateStatus();
+                    if (documentSnapshot.getString("status").equals("0")) {
+                        StatusBtn.setText("End");
+                        OrderBtn.setText("InProgress");
+                        OrderBtn.setClickable(false);
+                    } else {
+                        StatusBtn.setText("InProgress");
+                        OrderBtn.setText("Order");
+                        OrderBtn.setClickable(true);
+                    }
+
+                    if (documentSnapshot.getString("status").equals("1") && !userIdB.equals(userIdA)) {
+                        updateStatus();
+                    }
                 }
             }
         });
@@ -182,6 +196,16 @@ public class OrderActivity extends AppCompatActivity {
                 });
             }
         });
+        DeleteTool.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeleteItem();
+                dr.delete();
+                Intent i = new Intent(OrderActivity.this, HomeActivity.class);
+                finish();
+                startActivity(i);
+            }
+        });
 
     }
 
@@ -223,7 +247,6 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     public String getTotal(Date end, Date start, String price) {
-        Date e,s;
         String str = null;
         double total;
         double mprice = Double.parseDouble(price);
@@ -245,6 +268,10 @@ public class OrderActivity extends AppCompatActivity {
     public String getDiffDates(long day, long hours, long minutes) {
         String str = day + ":" + hours + ":" + minutes;
         return str;
+    }
+    public void DeleteItem(){
+        FirebaseDatabase.getInstance().getReference()
+                .child("tools").child(toolId).removeValue();
     }
 
 }

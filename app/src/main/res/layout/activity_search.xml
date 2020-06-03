@@ -113,16 +113,14 @@
 
     <ListView
         android:id="@+id/m_tools"
-        android:layout_width="362dp"
-        android:layout_height="492dp"
+        android:layout_width="match_parent"
+        android:layout_height="421dp"
         android:background="#11AC8E"
         android:divider="#020202"
 
         android:dividerHeight="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintHorizontal_bias="0.588"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintVertical_bias="0.059" />
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

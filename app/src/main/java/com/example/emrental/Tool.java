@@ -7,17 +7,19 @@ public class Tool {
     private String type;
     private String userid;
     private int status;
+    private String address;
 
     Tool() {
     }
 
-    Tool(String m_location, String m_name, String m_price, String m_type, String m_userid, int m_available) {
+    Tool(String m_location, String m_name, String m_price, String m_type, String m_userid ,int m_available,String mAddress) {
         this.name = m_name;
         this.location = m_location;
         this.price = m_price;
         this.type = m_type;
         this.userid = m_userid;
         this.status = m_available;
+        this.address = mAddress;
     }
 
     public void setName(String m_name) {
@@ -67,4 +69,13 @@ public class Tool {
     public void setAvailable(int available) {
         this.status = available;
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
 }

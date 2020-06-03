@@ -8,141 +8,125 @@
     android:padding="1dp"
     tools:context=".OrderActivity">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout2"
-        android:layout_width="376dp"
-        android:layout_height="698dp"
-        android:background="#066255"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <Button
+        android:id="@+id/StatusBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Order"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="2dp" />
 
-        <Button
-            android:id="@+id/StatusBtn"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="308dp"
+        android:layout_height="323dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bOrder">
+
+        <TextView
+            android:id="@+id/tType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="388dp"
-            android:text="No Order" />
-
-        <Button
-            android:id="@+id/bOrder"
-            android:layout_width="371dp"
-            android:layout_height="55dp"
-            android:layout_below="@+id/imageView"
-            android:layout_marginTop="45dp"
-            android:text="Order" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="308dp"
-            android:layout_height="323dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="31dp"
-            android:layout_marginLeft="31dp"
-            android:layout_marginEnd="35dp"
-            android:layout_marginRight="35dp"
-            android:layout_marginBottom="59dp">
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="13dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tLocation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tName"
+            app:layout_constraintVertical_bias="0.45" />
 
-            <TextView
-                android:id="@+id/tType"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:gravity="fill"
-                android:textColor="#FFFFFF"
-                android:textSize="13dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/tLocation"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.503"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tName"
-                app:layout_constraintVertical_bias="0.45" />
+        <TextView
+            android:id="@+id/tName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.102" />
 
-            <TextView
-                android:id="@+id/tName"
-                android:layout_width="182dp"
-                android:layout_height="30dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentBottom="true"
-                android:gravity="center|fill"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.102" />
+        <TextView
+            android:id="@+id/tPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/paypal"
+            android:layout_marginTop="124dp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="13dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.525"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tName" />
 
-            <TextView
-                android:id="@+id/tPrice"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/paypal"
-                android:layout_marginTop="136dp"
-                android:gravity="fill"
-                android:textColor="#FFFFFF"
-                android:textSize="13dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.525"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tName" />
+        <TextView
+            android:id="@+id/tLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tPrice"
+            android:gravity="center"
+            android:text=""
+            android:textColor="#FFFFFF"
+            android:textSize="13dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tName"
+            app:layout_constraintVertical_bias="0.776" />
 
-            <TextView
-                android:id="@+id/tLocation"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/tPrice"
-                android:gravity="fill"
-                android:text=""
-                android:textColor="#FFFFFF"
-                android:textSize="13dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/tPrice"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.503"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tName"
-                app:layout_constraintVertical_bias="0.616" />
+        <TextView
+            android:id="@+id/tOwner"
+            android:layout_width="match_parent"
+            android:layout_height="17dp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="13dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tPrice"
+            app:layout_constraintVertical_bias="0.272" />
 
-            <TextView
-                android:id="@+id/tOwner"
-                android:layout_width="64dp"
-                android:layout_height="17dp"
-                android:gravity="center"
-                android:textColor="#FFFFFF"
-                android:textSize="13dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tPrice"
-                app:layout_constraintVertical_bias="0.272" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/bOrder"
+        android:layout_width="371dp"
+        android:layout_height="55dp"
+        android:text="Order"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="1dp" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="372dp"
-            android:layout_height="210dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="0dp"
-            android:layout_marginRight="0dp"
-            android:background="@mipmap/ic_launcher_round" />
-
-    </RelativeLayout>
+    <Button
+        android:id="@+id/delToolbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Tool"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.996"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

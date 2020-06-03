@@ -17,6 +17,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -49,8 +50,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     GoogleMap mMap;
     FirebaseAuth fAuth;
     Button AddToolBtn, ProfileBtn, SearchBtn;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference toolsList = db.collection("tools");
+    public FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public CollectionReference toolsList;
     FusedLocationProviderClient client;
     public Location currLocation;
     //boolean UserOwner= false;
@@ -59,7 +61,10 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_home);
+        if (db.collection("tools") != null)
+            toolsList = db.collection("tools");
         //-------------- attach variables with XML file ----------
         ProfileBtn = (Button) findViewById(R.id.button11);
         AddToolBtn = (Button) findViewById(R.id.button12);
@@ -103,6 +108,16 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void getCurrLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         client.getLastLocation().addOnSuccessListener(HomeActivity.this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -117,58 +132,72 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         // ------------------ Read data from the tools list in Firebase ----------------------
         // ------------------ Put markers on the map for all the tools  ----------------------
-        toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    String location = documentSnapshot.get("location").toString();
-                    Double mLat, mLong;
-                    String parts[] = location.split(" ");
-                    // -------- Coordinates for each tool --------
-                    mLat = Double.parseDouble(parts[0]);
-                    mLong = Double.parseDouble(parts[1]);
-                    LatLng toolLocation = new LatLng(mLat, mLong);
-                    // -------- Match the marker icon with the type of the tool ----------
-                    if (documentSnapshot.get("type").equals("Bike")) {
-                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_bike);
-                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                    } else if (documentSnapshot.get("type").equals("Car")) {
-                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_car);
-                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                    } else {
-                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_scooter);
-                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                    }
-                    // -------------------- Zoom in to the current user location -------------------
-                    // ------------- Error when there is a problem to read the current location ----
-                    if (currLocation != null) {
-                        LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 7));
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
+        if(toolsList !=null) {
+            toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        String location = documentSnapshot.get("location").toString();
+                        Double mLat, mLong;
+                        String parts[] = location.split(" ");
+                        // -------- Coordinates for each tool --------
+                        mLat = Double.parseDouble(parts[0]);
+                        mLong = Double.parseDouble(parts[1]);
+                        LatLng toolLocation = new LatLng(mLat, mLong);
+                        // -------- Match the marker icon with the type of the tool ----------
+                        if (documentSnapshot.get("type").equals("Bike")) {
+                            BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_bike);
+                            mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                        } else if (documentSnapshot.get("type").equals("Car")) {
+                            BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_car);
+                            mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                        } else {
+                            BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_scooter);
+                            mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                        }
+                        // -------------------- Zoom in to the current user location -------------------
+                        // ------------- Error when there is a problem to read the current location ----
+                        if (currLocation != null) {
+                            LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 7));
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 FirebaseFirestore fstore;
                 DocumentReference dr;
                 final Intent i = new Intent(HomeActivity.this, OrderActivity.class);
-                fstore = FirebaseFirestore.getInstance();
-                dr = fstore.collection("tools").document(marker.getSnippet());
-                dr.addSnapshotListener(HomeActivity.this, new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                        fAuth = FirebaseAuth.getInstance();
-                    }
-                });
+                if(toolsList != null) {
+                    fstore = FirebaseFirestore.getInstance();
+                    dr = fstore.collection("tools").document(marker.getSnippet());
+                    dr.addSnapshotListener(HomeActivity.this, new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                            fAuth = FirebaseAuth.getInstance();
+                        }
+                    });
+                }
                 i.putExtra("ToolId", marker.getSnippet());
                 startActivity(i);
                 return false;
             }
         });
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true);
     }
 

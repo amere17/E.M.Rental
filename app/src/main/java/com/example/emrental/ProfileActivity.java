@@ -55,8 +55,7 @@ import java.util.Vector;
 public class ProfileActivity extends AppCompatActivity implements UpdateProfile.dialogListner {
 
     //----------------------- Variables & Objects -------------------
-    TextView phonetv, emailtv, fullnametv, paypaltv, ratetv;
-    ImageView avatar;
+    TextView phonetv, emailtv, fullnametv, paypaltv, ratetv,dealtv;
     Button logoutbtn, edit;
     ListView dealslv, toolslv;
     FirebaseFirestore fstore;
@@ -68,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     ArrayList<String> mArraylist2 = new ArrayList<>();
     Tool item;
     Order order;
-    Map m = new HashMap();
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
@@ -88,11 +86,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         fullnametv = findViewById(R.id.fullname);
         paypaltv = findViewById(R.id.paypal);
         logoutbtn = findViewById(R.id.logout);
-        avatar = findViewById(R.id.imageView);
         dealslv = findViewById(R.id.dealsl);
         toolslv = findViewById(R.id.toolsl);
         ratetv = findViewById(R.id.rateResult);
         edit = findViewById(R.id.editProfile);
+        dealtv = findViewById(R.id.dealst);
         //---------------- get firebase data for current user --------------
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
@@ -103,6 +101,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             logoutbtn.setVisibility(View.GONE);
             dealslv.setVisibility(View.GONE);
             edit.setVisibility(View.GONE);
+            dealtv.setVisibility(View.GONE);
         }
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,22 +138,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    vec.addElement(documentSnapshot.getId());
-                }
+                    Map<String, Object> d = documentSnapshot.getData();
+                    if (d.get("userid").equals(userId)) {
+                        vec.addElement(documentSnapshot.getId());
+                        mArraylist.add(d.get("name") + "\n" + d.get("price") + "\n" + d.get("type") + "\n" + d.get("address"));
+                    }
+                }toolslv.setAdapter(itemArrayAdapter);
             }
         });
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    item = ds.getValue(Tool.class);
-                    if (item.getUserid().equals(userId)) {
-                        mArraylist.add(item.getName() + "\n" + item.getPrice() + " " + item.getType() + "\n" + item.getLocation());
-                    }
-                }
-
-                toolslv.setAdapter(itemArrayAdapter);
                 toolslv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -171,22 +162,8 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                         return false;
                     }
                 });
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         final Vector vec2 = new Vector<>();
-        dealsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    vec2.addElement(documentSnapshot.getId());
-                }
-            }
-        });
         ref2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -194,6 +171,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                     order = ds.getValue(Order.class);
                     if ((order.getOwner().equals(userId) || order.getUser().equals(userId)) && order.getStatus().equals("D")) {
                         mArraylist2.add(order.getTotalPrice() + "\n" + order.getEnd() + "\n");
+                        vec2.addElement(ds.getKey());
                     }
 
                 }
@@ -201,9 +179,9 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 dealslv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //Intent i = new Intent(ProfileActivity.this, OrderActivity.class);
-                        //i.putExtra("ToolId", vec2.elementAt(position).toString());
-                        //startActivity(i);
+                        Intent i = new Intent(ProfileActivity.this, DealDisplay.class);
+                        i.putExtra("DealId", vec2.elementAt(position).toString());
+                        startActivity(i);
                     }
                 });
                 dealslv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -258,10 +236,9 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     }
 
     @Override
-    public void applyTexts(String paypal, String fullname, String phone, String email) {
+    public void applyTexts(String paypal, String fullname, String phone) {
         Map<String,String> userData = new HashMap<>();
         userData.put("Full Name",fullname);
-        userData.put("Email",email);
         userData.put("PayPal",paypal);
         userData.put("Phone",phone);
         userData.put("rate",rate);

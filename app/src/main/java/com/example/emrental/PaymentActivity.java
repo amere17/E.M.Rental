@@ -8,13 +8,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.emrental.config.Config;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalService;
@@ -37,7 +41,8 @@ public class PaymentActivity extends AppCompatActivity {
     DocumentReference dr;
     TextView mOwner, mTotal, mStartDate, mEndDate, mCurrDate;
     Button mPay;
-    String m_Owner;
+    String m_Owner,OwnerEmail;
+
     public static final int PAYPAL_REQUEST_CODE = 7171;
     private static PayPalConfiguration config = new PayPalConfiguration()
             .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
@@ -53,7 +58,9 @@ public class PaymentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_payment);
+        fstore = FirebaseFirestore.getInstance();
         mOwner = (TextView) findViewById(R.id.ownerTool);
         mTotal = (TextView) findViewById(R.id.totalPrice);
         mStartDate = (TextView) findViewById(R.id.startDate);
@@ -70,7 +77,13 @@ public class PaymentActivity extends AppCompatActivity {
         mStartDate.setText("Start Rental: " + m_Start);
         mEndDate.setText("End Rental: " + m_End);
         mCurrDate.setText("Current Time:" + currTimeStr);
-        mOwner.setText("Owner: " + m_Owner);
+        dr = fstore.collection("Users").document(m_Owner.trim());
+        dr.addSnapshotListener(PaymentActivity.this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@androidx.annotation.Nullable DocumentSnapshot documentSnapshot, @androidx.annotation.Nullable FirebaseFirestoreException e) {
+                mOwner.setText(documentSnapshot.getString("PayPal"));
+            }
+        });
         Intent intent = new Intent(this, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         startService(intent);
@@ -95,7 +108,8 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void processPayment() {
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "ILS", "emRental", PayPalPayment.PAYMENT_INTENT_SALE);
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "ILS",mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
+        payPalPayment.payeeEmail(mOwner.getText().toString().trim());
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         intent.putExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_PAYMENT, payPalPayment);

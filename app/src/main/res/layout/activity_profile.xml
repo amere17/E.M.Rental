@@ -35,41 +35,62 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.457">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="89dp"
-            android:layout_height="128dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="1dp"
-            android:layout_marginRight="1dp"
-            android:background="@mipmap/ic_launcher_round" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="276dp"
+            android:layout_width="match_parent"
             android:layout_height="175dp">
 
             <TextView
                 android:id="@+id/fullname"
-                android:layout_width="182dp"
+                android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
-                android:gravity="center|fill"
+                android:gravity="center"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="18dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.308"
+                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.11" />
 
             <TextView
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/email"
+                android:gravity="center"
+                android:text=""
+                android:textColor="#FFFFFF"
+                android:textSize="13dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/email"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fullname"
+                app:layout_constraintVertical_bias="0.73" />
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/paypal"
+                android:layout_marginTop="92dp"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="13dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.514"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fullname" />
+
+            <TextView
                 android:id="@+id/paypal"
-                android:layout_width="175dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
                 android:layout_alignParentStart="true"
@@ -77,61 +98,23 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:gravity="fill"
+                android:gravity="center"
                 android:textColor="#FFFFFF"
                 android:textSize="13dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/phone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.287"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fullname"
-                app:layout_constraintVertical_bias="0.478" />
-
-            <TextView
-                android:id="@+id/phone"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/email"
-                android:gravity="fill"
-                android:text=""
-                android:textColor="#FFFFFF"
-                android:textSize="13dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/email"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.287"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fullname"
-                app:layout_constraintVertical_bias="0.705" />
-
-            <TextView
-                android:id="@+id/email"
-                android:layout_width="175dp"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/paypal"
-                android:layout_marginTop="96dp"
-                android:gravity="fill"
-                android:textColor="#FFFFFF"
-                android:textSize="13dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.287"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fullname" />
+                app:layout_constraintVertical_bias="0.461"
+                tools:layout_editor_absoluteX="202dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/rateResult"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginEnd="37dp"
-            android:layout_marginRight="37dp"
-            android:layout_marginBottom="37dp"
+            android:layout_marginBottom="4dp"
             android:gravity="center"
             android:textStyle="bold" />
     </RelativeLayout>

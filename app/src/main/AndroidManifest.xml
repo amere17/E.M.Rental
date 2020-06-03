@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UpdateProfile"></activity>
+        <activity android:name=".DealDisplay" android:theme="@style/Theme.AppCompat.Dialog"></activity>
+        <activity android:name=".UpdateProfile" />
         <activity
             android:name=".PaymentDetails"
             android:theme="@style/Theme.AppCompat.Dialog" />

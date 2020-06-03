@@ -11,6 +11,8 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -31,9 +33,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 public class AddActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
@@ -42,6 +48,9 @@ public class AddActivity extends AppCompatActivity {
     DatabaseReference ref;
     FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
     RadioButton radioButton;
+    public String id;
+    Map<String,String> mToolList = new HashMap<>();
+    String result;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,13 +63,12 @@ public class AddActivity extends AppCompatActivity {
         client = LocationServices.getFusedLocationProviderClient(this);
         //-----------------  Attaching objects with XML file --------------
         final Button Cord = findViewById(R.id.button7);
-        final Button Upld = findViewById(R.id.button9);
         final Button Add = findViewById(R.id.button8);
         final EditText toolName = findViewById(R.id.editText);
         final EditText toolPrice = findViewById(R.id.editText3);
-        //ImageView toolPic = findViewById(R.id.imageView4);
         final TextView tv = findViewById(R.id.textView2);
         final RadioGroup mType = findViewById(R.id.type);
+        tv.setVisibility(View.INVISIBLE);
         //----------------- Call function to request permission for Location service ---------
         requestPer();
         //----------------- Current location for the item to add a marker on the map -------
@@ -75,9 +83,19 @@ public class AddActivity extends AppCompatActivity {
                      public void onSuccess(Location location) {
 
                         if(location != null){
-                            tv.setText(location.getLatitude() + " " + location.getLongitude());
-                            Toast.makeText(AddActivity.this, "Coord: "+location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            Geocoder geo = new Geocoder(getApplicationContext(),Locale.getDefault());
+                            Address address;
+                            List<Address> list = null;
+                            try {
+                                list = geo.getFromLocation(location.getLatitude(),location.getLongitude(),1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            address = list.get(0);
+                            result = address.getAddressLine(0) +"\n"+ address.getFeatureName();
+                            Toast.makeText(AddActivity.this, result, Toast.LENGTH_LONG).show();
 
+                            tv.setText(location.getLatitude() + " " + location.getLongitude());
                         }
                         else{
                             Toast.makeText(AddActivity.this, "GPS Error", Toast.LENGTH_SHORT).show();
@@ -87,12 +105,7 @@ public class AddActivity extends AppCompatActivity {
             }
         });
         //----------------- Upload image for the tool -----------------
-        Upld.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                choose();
-            }
-        });
+
         //---------------- methods for clicking add button ------------
         //-- add a new tool with all the info to the firebase database -
         ref = FirebaseDatabase.getInstance().getReference().child("tools");
@@ -109,20 +122,23 @@ public class AddActivity extends AppCompatActivity {
                 if(!TextUtils.isEmpty(mToolName)&& !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location)&& radioButton.isChecked()){
 
                     // Add new tool to realtime database and the collection firebase "tools"
-                    Map<String,String> mToolList = new HashMap<>();
                     mToolList.put("name",mToolName);
                     mToolList.put("price",mToolPrice);
                     mToolList.put("userid",mUserUid);
                     mToolList.put("type",radioButton.getText().toString());
                     mToolList.put("location",tv.getText().toString());
                     mToolList.put("status","1");
-                    ref.push().setValue(mToolList);
-                    mFireStore.collection("tools").document().set(mToolList).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    mToolList.put("address",result);
+                    mFireStore.collection("tools").add(mToolList).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
-                        public void onSuccess(Void aVoid) {
+                        public void onSuccess(DocumentReference documentReference) {
                             Toast.makeText(AddActivity.this, "Tool Saved", Toast.LENGTH_SHORT).show();
+
+                            id = documentReference.getId();
+                            ref.child(id).setValue(mToolList);
                         }
                     });
+
 
                     // Stop this activity and return to the Home Activity
                     finish();
@@ -139,9 +155,6 @@ public class AddActivity extends AppCompatActivity {
         });
     }
 
-    private void choose() {
-
-    }
     //--- function to request permission for Location service ----
     private void requestPer(){
         ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
