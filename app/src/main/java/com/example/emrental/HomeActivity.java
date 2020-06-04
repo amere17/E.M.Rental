@@ -33,6 +33,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -48,10 +50,8 @@ import javax.annotation.Nullable;
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
     //------------- Variables & Objects -------------------
     GoogleMap mMap;
-    FirebaseAuth fAuth;
     Button AddToolBtn, ProfileBtn, SearchBtn;
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     public CollectionReference toolsList;
     FusedLocationProviderClient client;
     public Location currLocation;
@@ -132,8 +132,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         // ------------------ Read data from the tools list in Firebase ----------------------
         // ------------------ Put markers on the map for all the tools  ----------------------
-        if(toolsList !=null) {
-            toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+           toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
@@ -166,23 +166,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 }
             });
-        }
+
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                FirebaseFirestore fstore;
-                DocumentReference dr;
                 final Intent i = new Intent(HomeActivity.this, OrderActivity.class);
-                if(toolsList != null) {
-                    fstore = FirebaseFirestore.getInstance();
-                    dr = fstore.collection("tools").document(marker.getSnippet());
-                    dr.addSnapshotListener(HomeActivity.this, new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                            fAuth = FirebaseAuth.getInstance();
-                        }
-                    });
-                }
                 i.putExtra("ToolId", marker.getSnippet());
                 startActivity(i);
                 return false;

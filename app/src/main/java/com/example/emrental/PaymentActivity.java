@@ -45,7 +45,7 @@ public class PaymentActivity extends AppCompatActivity {
 
     public static final int PAYPAL_REQUEST_CODE = 7171;
     private static PayPalConfiguration config = new PayPalConfiguration()
-            .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+            .environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION)
             .clientId(Config.PAYPAL_CLIENT_ID);
     float amount;
 
@@ -86,6 +86,7 @@ public class PaymentActivity extends AppCompatActivity {
         });
         Intent intent = new Intent(this, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        intent.putExtra(PayPalService.ACCOUNT_SERVICE,mOwner.getText().toString());
         startService(intent);
         amount = Float.parseFloat(m_Total);
         if (amount == 0) {
@@ -108,7 +109,8 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void processPayment() {
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "ILS",mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)),
+                "USD",mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
         payPalPayment.payeeEmail(mOwner.getText().toString().trim());
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
@@ -128,7 +130,7 @@ public class PaymentActivity extends AppCompatActivity {
                         String paymentDetails = confirmation.toJSONObject().toString(4);
                         startActivity(new Intent(this, PaymentDetails.class)
                                 .putExtra("PaymentDetails", paymentDetails)
-                                .putExtra("PaymentAmount", amount)
+                                .putExtra("PaymentAmount", String.valueOf(amount))
                                 .putExtra("Owner",m_Owner)
                         );
                     } catch (JSONException e) {

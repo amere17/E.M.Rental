@@ -32,24 +32,27 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.florescu.android.rangeseekbar.RangeSeekBar;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
 public class SearchActivity extends AppCompatActivity {
     //-------------------- Variables & Objects -------------------
-    EditText etLocation, etPrice;
+    EditText etLocation;
     ListView lvItems;
     ArrayList<String> mArraylist = new ArrayList<>();
     Button searchBtnItems;
     DatabaseReference dr;
     FirebaseDatabase firebasedatabase;
     Tool item;
+    int min,max;
     CheckBox cbBike, cbCar, cbScooter;
     Vector<String> cbTypes = new Vector<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
-
+    RangeSeekBar etPrice;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,12 +61,23 @@ public class SearchActivity extends AppCompatActivity {
         //-------------- Attaching variables & objects with XML file ----------
         item = new Tool();
         etLocation = findViewById(R.id.editText5);
-        etPrice = findViewById(R.id.editText7);
+        etPrice = (RangeSeekBar)findViewById(R.id.rangeSeekBar );
         searchBtnItems = findViewById(R.id.button2);
         lvItems = findViewById(R.id.m_tools);
         cbBike = findViewById(R.id.checkBox2);
         cbScooter = findViewById(R.id.checkBox3);
         cbCar = findViewById(R.id.checkBox4);
+        etPrice.setSelectedMaxValue(100);
+        etPrice.setSelectedMinValue(0);
+        etPrice.setOnRangeSeekBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangeListener() {
+            @Override
+            public void onRangeSeekBarValuesChanged(RangeSeekBar bar, Object minValue, Object maxValue) {
+                max = (int)bar.getSelectedMaxValue();
+                min = (int)bar.getSelectedMinValue();
+                Toast.makeText(getApplicationContext(), min+" "+max, Toast.LENGTH_SHORT).show();
+
+            }
+        });
         final ArrayAdapter<String> itemArrayAdapter =
                 new ArrayAdapter<String>
                         (SearchActivity.this, android.R.layout.simple_list_item_1, mArraylist);
@@ -76,6 +90,7 @@ public class SearchActivity extends AppCompatActivity {
         searchBtnItems.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), min+" "+max, Toast.LENGTH_LONG).show();
                 cbTypes.clear();
                 mArraylist.clear();
                 fillVecTypes();
@@ -85,7 +100,9 @@ public class SearchActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     Map<String, Object> d = documentSnapshot.getData();
-                    if(TypeOn(d.get("type").toString().trim()) || cbTypes.isEmpty()) {
+                    if((TypeOn(d.get("type").toString().trim()) && Double.valueOf(d.get("price").toString())>min
+                            && Double.valueOf(d.get("price").toString())<max)
+                            || cbTypes.isEmpty()) {
                         vec.addElement(documentSnapshot.getId());
                         mArraylist.add(d.get("name") + "\n" + d.get("price") + "\n" + d.get("type") + "\n" + d.get("address"));
                     }

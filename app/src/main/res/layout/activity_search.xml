@@ -10,8 +10,8 @@
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
-        android:layout_width="377dp"
-        android:layout_height="182dp"
+        android:layout_width="356dp"
+        android:layout_height="175dp"
         android:background="#066255"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,24 +38,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/editText7"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="66dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginRight="6dp"
-            android:ems="10"
-            android:hint="Price (min,max)"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.096"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <CheckBox
             android:id="@+id/checkBox2"
             android:layout_width="wrap_content"
@@ -74,18 +56,6 @@
             android:text="Bike" />
 
         <CheckBox
-            android:id="@+id/checkBox3"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_below="@+id/editText5"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="64dp"
-            android:layout_marginEnd="163dp"
-            android:layout_marginRight="163dp"
-            android:text="Scooter" />
-
-        <CheckBox
             android:id="@+id/checkBox4"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
@@ -93,10 +63,22 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginTop="64dp"
-            android:layout_marginEnd="246dp"
-            android:layout_marginRight="246dp"
+            android:layout_marginEnd="230dp"
+            android:layout_marginRight="230dp"
             android:layout_marginBottom="20dp"
             android:text="Car" />
+
+        <CheckBox
+            android:id="@+id/checkBox3"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_below="@+id/editText5"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="147dp"
+            android:layout_marginRight="147dp"
+            android:text="Scooter" />
 
         <Button
             android:id="@+id/button2"
@@ -109,6 +91,13 @@
             android:layout_marginEnd="24dp"
             android:layout_marginRight="24dp"
             android:text="@android:string/search_go" />
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rangeSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/checkBox3"
+            android:layout_marginBottom="49dp" />
     </RelativeLayout>
 
     <ListView
@@ -120,7 +109,8 @@
 
         android:dividerHeight="2dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.588"
+        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

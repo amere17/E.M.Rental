@@ -30,6 +30,7 @@ public class PaymentDetails extends AppCompatActivity {
     FirebaseFirestore fstore;
     User user;
     DocumentReference dr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,10 +57,9 @@ public class PaymentDetails extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final float rateR = rb.getRating();
-                if(rateR  < 0.5){
+                if (rateR < 0.5) {
                     Toast.makeText(PaymentDetails.this, "Please Rate The Seller", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                } else {
                     user = new User();
                     m_Owner = getIntent().getExtras().getString("Owner");
                     dr = fstore.collection("Users").document(m_Owner);
@@ -67,11 +67,16 @@ public class PaymentDetails extends AppCompatActivity {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                             String curr = documentSnapshot.getString("rate");
-                            float currRate = Float.parseFloat(curr);
-                            currRate+=rateR;
-                            if(!curr.equals("0")){
-                                currRate*=0.5;
+                            float currRate;
+                            if (!curr.equals("null"))
+                                currRate = Float.parseFloat(curr);
+                            else
+                                currRate = 0;
+                            currRate += rateR;
+                            if (!curr.equals("0")) {
+                                currRate *= 0.5;
                             }
+
                             user.setName(documentSnapshot.getString("Full Name"));
                             user.setPaypal(documentSnapshot.getString("PayPal"));
                             user.setRate(String.valueOf(currRate));
@@ -86,13 +91,15 @@ public class PaymentDetails extends AppCompatActivity {
             }
         });
     }
-    private void update(User mUser){
+
+    private void update(User mUser) {
         fstore = FirebaseFirestore.getInstance();
         dr = fstore.collection("Users").document(m_Owner);
-        dr.update("Email",mUser.getMail(),"Full Name",mUser.getFullName(),
-                "PayPal",mUser.getPaypal(),
-                "Phone",mUser.getNumber(),"rate",mUser.getRate());
+        dr.update("Email", mUser.getMail(), "Full Name", mUser.getFullName(),
+                "PayPal", mUser.getPaypal(),
+                "Phone", mUser.getNumber(), "rate", mUser.getRate());
     }
+
     private void showDetails(JSONObject response, String paymentAmount) {
         try {
             textID.setText(response.getString("id"));

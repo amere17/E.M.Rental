@@ -241,7 +241,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         userData.put("Full Name",fullname);
         userData.put("PayPal",paypal);
         userData.put("Phone",phone);
-        userData.put("rate",rate);
+        userData.put("Email",emailtv.getText().toString());
+        if(rate.equals("0"))
+            userData.put("rate","0");
+        else
+            userData.put("rate",rate);
         fstore.collection("Users").document(userId).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
