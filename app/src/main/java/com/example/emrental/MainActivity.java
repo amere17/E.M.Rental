@@ -11,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -36,8 +38,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     // ----------------- Variables & Objects -------------------
     EditText emailId, passwordId, paypalId, fullnameId, phoneId;
-    Button signUpBtn;
-    TextView signIntv;
+    Button signUpBtn,UpldPI;
+    TextView signIntv,PayPalCrt;
     String userId;
     FirebaseAuth fbAuth;
     FirebaseFirestore fstore;
@@ -65,6 +67,16 @@ public class MainActivity extends AppCompatActivity {
         phoneId = findViewById(R.id.editText11);
         signUpBtn = findViewById(R.id.button);
         signIntv = findViewById(R.id.textView);
+        PayPalCrt = findViewById(R.id.PayPaltv);
+        PayPalCrt.setMovementMethod(LinkMovementMethod.getInstance());
+        PayPalCrt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent bIntent = new Intent(Intent.ACTION_VIEW);
+                bIntent.setData(Uri.parse("http://paypal.com"));
+                startActivity(bIntent);
+            }
+        });
         // ------------------ Sign Up button methods -------------------
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             String email, password, fullname, phone, paypal;

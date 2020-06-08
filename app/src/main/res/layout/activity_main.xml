@@ -15,7 +15,8 @@
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.21">
 
         <EditText
             android:id="@+id/editText4"
@@ -78,7 +79,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="30dp"
             android:ems="10"
-            android:hint="PayPal Account"
+            android:hint="PayPal Email Account"
             android:inputType="textPersonName"
             android:textColorHint="#EFEFEF"
             app:layout_constraintBottom_toTopOf="@+id/button"
@@ -137,5 +138,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/PayPaltv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:gravity="center"
+        android:text="Create PayPal Account"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout4"
+        app:layout_constraintVertical_bias="0.771" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Your ID "
+        app:layout_constraintBottom_toTopOf="@+id/PayPaltv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

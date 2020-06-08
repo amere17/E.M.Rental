@@ -13,9 +13,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -26,12 +28,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,7 +52,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     ListView dealslv, toolslv;
     FirebaseFirestore fstore;
     FirebaseAuth fAuth;
+    ImageView pIV;
     DatabaseReference ref, ref2;
     String userId;
     String rate;
@@ -67,10 +79,9 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     ArrayList<String> mArraylist2 = new ArrayList<>();
     Tool item;
     Order order;
-
+    final int TAKE_IMAGE_CODE = 100;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
-    private CollectionReference dealsList = db.collection("Deals");
 
 
     @Override
@@ -91,26 +102,39 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         ratetv = findViewById(R.id.rateResult);
         edit = findViewById(R.id.editProfile);
         dealtv = findViewById(R.id.dealst);
+        pIV = (ImageView)findViewById(R.id.profileIV);
         //---------------- get firebase data for current user --------------
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
+
         if (extraStr == null || extraStr.getString(mString).equals(fAuth.getCurrentUser().getUid().trim())) {
             userId = fAuth.getCurrentUser().getUid();
         } else {
             userId = extraStr.getString(mString);
-            logoutbtn.setVisibility(View.GONE);
-            dealslv.setVisibility(View.GONE);
-            edit.setVisibility(View.GONE);
-            dealtv.setVisibility(View.GONE);
+            logoutbtn.setVisibility(View.INVISIBLE);
+            dealslv.setVisibility(View.INVISIBLE);
+            edit.setVisibility(View.INVISIBLE);
+            dealtv.setVisibility(View.INVISIBLE);
+            pIV.setEnabled(false);
         }
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Toast.makeText(ProfileActivity.this, "Tap on Tool/Deal to delete OR Update Your Profile", Toast.LENGTH_LONG).show();
                     openDialog();
             }
 
 
+        });
+        pIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    handleImageClick(v);
+                }catch (RuntimeException e)
+                {
+
+                }
+            }
         });
         //------------ get all the data for the current user to display in the profile ------
         DocumentReference dr = fstore.collection("Users").document(userId);
@@ -123,6 +147,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 paypaltv.setText(documentSnapshot.getString("PayPal"));
                 rate = documentSnapshot.getString("rate");
                 ratetv.setText(rate + "/5");
+                 final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                         child("ProfileImages").child(userId+".jpeg");
+                 reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                     @Override
+                     public void onSuccess(Uri uri) {
+                         Glide.with(ProfileActivity.this).load(uri).into(pIV);
+                     }
+                 });
 
             }
         });
@@ -252,5 +284,68 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 Toast.makeText(ProfileActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void handleImageClick(View view){
+        Intent i1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+        if(i1.resolveActivity(getPackageManager())!=null)
+            startActivityForResult(i1,TAKE_IMAGE_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == TAKE_IMAGE_CODE && resultCode == RESULT_OK) {
+                    Bitmap b = (Bitmap)data.getExtras().get("data");
+                    pIV.setImageBitmap(b);
+                    handleUpload(b);
+        }
+    }
+
+    private void handleUpload(Bitmap b) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                child("ProfileImages").child(userId+".jpeg");
+        reference.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                getDownloadUrl(reference);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+    }
+    private void getDownloadUrl(StorageReference reference){
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Toast.makeText(ProfileActivity.this, "onSuccess "+uri, Toast.LENGTH_LONG).show();
+                setUserProfileUrl(uri);
+            }
+        });
+    }
+    private void setUserProfileUrl(Uri uri){
+        FirebaseUser user =FirebaseAuth.getInstance().getCurrentUser();
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+        user.updateProfile(request).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(ProfileActivity.this, "Updated Successfully", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileActivity.this, "Profile Image Failed...", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 }

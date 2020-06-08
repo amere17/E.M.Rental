@@ -36,8 +36,18 @@
         app:layout_constraintVertical_bias="0.457">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="175dp">
+            android:layout_width="230dp"
+            android:layout_height="165dp"
+            android:layout_above="@+id/rateResult"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginEnd="11dp"
+            android:layout_marginRight="11dp"
+            android:layout_marginBottom="12dp"
+            android:layout_toStartOf="@+id/profileIV"
+            android:layout_toLeftOf="@+id/profileIV">
 
             <TextView
                 android:id="@+id/fullname"
@@ -117,6 +127,17 @@
             android:layout_marginBottom="4dp"
             android:gravity="center"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/profileIV"
+            android:layout_width="135dp"
+            android:layout_height="172dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="1dp"
+            android:layout_marginRight="1dp"
+            app:srcCompat="@drawable/logo"
+            />
     </RelativeLayout>
 
     <TextView

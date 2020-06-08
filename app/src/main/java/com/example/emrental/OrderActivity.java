@@ -1,14 +1,20 @@
 package com.example.emrental;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.renderscript.ScriptGroup;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +32,18 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.paypal.android.sdk.m;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -39,10 +56,11 @@ import javax.annotation.Nullable;
 public class OrderActivity extends AppCompatActivity {
     DatabaseReference ref, ref2;
     DocumentReference dr, dr2;
-    Button OrderBtn, StatusBtn,DeleteTool;
+    Button OrderBtn, StatusBtn,DeleteTool,ShareBtn;
     FirebaseFirestore fstore;
     TextView tName, tPrice, tLocation, tType, tOwner;
     Order order;
+    CheckBox cb;
     public String userIdB;
     public String dealId;
     String toolId,id;
@@ -60,14 +78,32 @@ public class OrderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order);
         ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         ref2 = FirebaseDatabase.getInstance().getReference().child("tools");
-        StatusBtn = (Button) findViewById(R.id.StatusBtn);
-        OrderBtn = (Button) findViewById(R.id.bOrder);
+        StatusBtn = findViewById(R.id.StatusBtn);
+        OrderBtn = findViewById(R.id.bOrder);
         tName = findViewById(R.id.tName);
         tPrice = findViewById(R.id.tPrice);
         tLocation = findViewById(R.id.tLocation);
         tType = findViewById(R.id.tType);
         tOwner = findViewById(R.id.tOwner);
         DeleteTool = findViewById(R.id.delToolbtn);
+        cb= findViewById(R.id.termsCB);
+        ShareBtn = findViewById(R.id.ShareBtn);
+        ShareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Share();
+            }
+        });
+        cb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    termsDialog();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         toolId = getIntent().getExtras().getString("ToolId");
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
         } else {
@@ -101,10 +137,12 @@ public class OrderActivity extends AppCompatActivity {
                         StatusBtn.setVisibility(View.VISIBLE);
                         OrderBtn.setVisibility(View.INVISIBLE);
                         DeleteTool.setVisibility(View.VISIBLE);
+                        cb.setVisibility(View.INVISIBLE);
                     } else {
                         OrderBtn.setVisibility(View.VISIBLE);
                         StatusBtn.setVisibility(View.INVISIBLE);
                         DeleteTool.setVisibility(View.INVISIBLE);
+                        cb.setVisibility(View.VISIBLE);
                     }
                     if (documentSnapshot.getString("status").equals("0")) {
                         StatusBtn.setText("End");
@@ -137,6 +175,7 @@ public class OrderActivity extends AppCompatActivity {
         OrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               if(cb.isChecked()){
                 Map<String, String> mToolList = new HashMap<>();
                 mToolList.put("Owner", userIdA);
                 mToolList.put("User", userIdB);
@@ -147,6 +186,9 @@ public class OrderActivity extends AppCompatActivity {
                 mToolList.put("totalPrice", "null");
                 ref.push().setValue(mToolList);
                 finish();
+               }else{
+                   Toast.makeText(OrderActivity.this, "You Must Read The Terms", Toast.LENGTH_LONG).show();
+               }
             }
         });
 
@@ -269,9 +311,57 @@ public class OrderActivity extends AppCompatActivity {
         String str = day + ":" + hours + ":" + minutes;
         return str;
     }
+
     public void DeleteItem(){
         FirebaseDatabase.getInstance().getReference()
                 .child("tools").child(toolId).removeValue();
+    }
+
+    public void termsDialog() throws IOException {
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(OrderActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
+        adBuilder.setTitle("Terms & Conditions");
+        File mFolder = new File(getFilesDir() + "/assets");
+        File imgFile = new File(mFolder.getAbsolutePath() + "/terms.txt");
+        adBuilder.setMessage(readFile(imgFile.getPath()));
+        adBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        adBuilder.show();
+
+    }
+
+    private String readFile(String path) throws IOException {
+        BufferedReader reader = null;
+        String mLine,full="";
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getAssets().open("terms.txt")));
+            while ((mLine = reader.readLine()) != null) {
+                full+=mLine;
+                full+='\n';
+            }
+
+        } finally {
+            reader.close();
+        }
+        return full;
+    }
+
+    private void Share(){
+        try {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "E.M.Rental");
+            String shareMessage= "\nLet me recommend you this Tool From E.M.Rental\n";
+            shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + OrderActivity.this +"\n\n";
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+            startActivity(Intent.createChooser(shareIntent, "choose one"));
+        } catch(Exception e) {
+            //e.toString();
+        }
     }
 
 }

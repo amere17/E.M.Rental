@@ -109,6 +109,16 @@
             app:layout_constraintTop_toBottomOf="@+id/tPrice"
             app:layout_constraintVertical_bias="0.272" />
 
+        <CheckBox
+            android:id="@+id/termsCB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I Agree to Terms"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tOwner" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
@@ -126,6 +136,16 @@
         android:text="Delete Tool"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.996"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <Button
+        android:id="@+id/ShareBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Share Button"
+        app:layout_constraintEnd_toStartOf="@+id/delToolbtn"
+        app:layout_constraintHorizontal_bias="0.039"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 

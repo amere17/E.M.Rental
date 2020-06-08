@@ -159,7 +159,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                         // ------------- Error when there is a problem to read the current location ----
                         if (currLocation != null) {
                             LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 7));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 8));
                         } else {
                             Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
                         }
