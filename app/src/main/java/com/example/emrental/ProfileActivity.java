@@ -66,7 +66,7 @@ import java.util.Vector;
 public class ProfileActivity extends AppCompatActivity implements UpdateProfile.dialogListner {
 
     //----------------------- Variables & Objects -------------------
-    TextView phonetv, emailtv, fullnametv, paypaltv, ratetv,dealtv;
+    TextView phonetv, emailtv, fullnametv, paypaltv, ratetv, dealtv;
     Button logoutbtn, edit;
     ListView dealslv, toolslv;
     FirebaseFirestore fstore;
@@ -102,7 +102,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         ratetv = findViewById(R.id.rateResult);
         edit = findViewById(R.id.editProfile);
         dealtv = findViewById(R.id.dealst);
-        pIV = (ImageView)findViewById(R.id.profileIV);
+        pIV = (ImageView) findViewById(R.id.profileIV);
         //---------------- get firebase data for current user --------------
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
@@ -120,7 +120,8 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    openDialog();
+                Toast.makeText(ProfileActivity.this, "Update Your Profile Image By Clicking on it", Toast.LENGTH_LONG).show();
+                openDialog();
             }
 
 
@@ -130,8 +131,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             public void onClick(View v) {
                 try {
                     handleImageClick(v);
-                }catch (RuntimeException e)
-                {
+                } catch (RuntimeException e) {
 
                 }
             }
@@ -147,14 +147,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 paypaltv.setText(documentSnapshot.getString("PayPal"));
                 rate = documentSnapshot.getString("rate");
                 ratetv.setText(rate + "/5");
-                 final StorageReference reference = FirebaseStorage.getInstance().getReference().
-                         child("ProfileImages").child(userId+".jpeg");
-                 reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                     @Override
-                     public void onSuccess(Uri uri) {
-                         Glide.with(ProfileActivity.this).load(uri).into(pIV);
-                     }
-                 });
+                final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                        child("ProfileImages").child(userId + ".jpeg");
+                reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Glide.with(ProfileActivity.this).load(uri).into(pIV);
+                    }
+                });
 
             }
         });
@@ -175,25 +175,26 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                         vec.addElement(documentSnapshot.getId());
                         mArraylist.add(d.get("name") + "\n" + d.get("price") + "\n" + d.get("type") + "\n" + d.get("address"));
                     }
-                }toolslv.setAdapter(itemArrayAdapter);
+                }
+                toolslv.setAdapter(itemArrayAdapter);
             }
         });
-                toolslv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent i = new Intent(ProfileActivity.this, OrderActivity.class);
-                        i.putExtra("ToolId", vec.elementAt(position).toString());
-                        startActivity(i);
-                    }
-                });
-                dealslv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        mArraylist.remove(position);
-                        itemArrayAdapter.notifyDataSetChanged();
-                        return false;
-                    }
-                });
+        toolslv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(ProfileActivity.this, OrderActivity.class);
+                i.putExtra("ToolId", vec.elementAt(position).toString());
+                startActivity(i);
+            }
+        });
+        dealslv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                mArraylist.remove(position);
+                itemArrayAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
 
         final Vector vec2 = new Vector<>();
         ref2.addValueEventListener(new ValueEventListener() {
@@ -259,25 +260,25 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     private void openDialog() {
         UpdateProfile update = new UpdateProfile();
         Bundle args = new Bundle();
-        args.putString("FullName",fullnametv.getText().toString());
-        args.putString("PayPal",paypaltv.getText().toString());
-        args.putString("Email",emailtv.getText().toString());
-        args.putString("Phone",phonetv.getText().toString());
+        args.putString("FullName", fullnametv.getText().toString());
+        args.putString("PayPal", paypaltv.getText().toString());
+        args.putString("Email", emailtv.getText().toString());
+        args.putString("Phone", phonetv.getText().toString());
         update.setArguments(args);
-        update.show(getSupportFragmentManager(),"Update Profile");
+        update.show(getSupportFragmentManager(), "Update Profile");
     }
 
     @Override
     public void applyTexts(String paypal, String fullname, String phone) {
-        Map<String,String> userData = new HashMap<>();
-        userData.put("Full Name",fullname);
-        userData.put("PayPal",paypal);
-        userData.put("Phone",phone);
-        userData.put("Email",emailtv.getText().toString());
-        if(rate.equals("0"))
-            userData.put("rate","0");
+        Map<String, String> userData = new HashMap<>();
+        userData.put("Full Name", fullname);
+        userData.put("PayPal", paypal);
+        userData.put("Phone", phone);
+        userData.put("Email", emailtv.getText().toString());
+        if (rate.equals("0"))
+            userData.put("rate", "0");
         else
-            userData.put("rate",rate);
+            userData.put("rate", rate);
         fstore.collection("Users").document(userId).set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -286,10 +287,10 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         });
     }
 
-    public void handleImageClick(View view){
+    public void handleImageClick(View view) {
         Intent i1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
-        if(i1.resolveActivity(getPackageManager())!=null)
-            startActivityForResult(i1,TAKE_IMAGE_CODE);
+        if (i1.resolveActivity(getPackageManager()) != null)
+            startActivityForResult(i1, TAKE_IMAGE_CODE);
 
     }
 
@@ -297,17 +298,17 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_IMAGE_CODE && resultCode == RESULT_OK) {
-                    Bitmap b = (Bitmap)data.getExtras().get("data");
-                    pIV.setImageBitmap(b);
-                    handleUpload(b);
+            Bitmap b = (Bitmap) data.getExtras().get("data");
+            pIV.setImageBitmap(b);
+            handleUpload(b);
         }
     }
 
     private void handleUpload(Bitmap b) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final StorageReference reference = FirebaseStorage.getInstance().getReference().
-                child("ProfileImages").child(userId+".jpeg");
+                child("ProfileImages").child(userId + ".jpeg");
         reference.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -321,17 +322,19 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             }
         });
     }
-    private void getDownloadUrl(StorageReference reference){
+
+    private void getDownloadUrl(StorageReference reference) {
         reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Toast.makeText(ProfileActivity.this, "onSuccess "+uri, Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, "onSuccess ", Toast.LENGTH_LONG).show();
                 setUserProfileUrl(uri);
             }
         });
     }
-    private void setUserProfileUrl(Uri uri){
-        FirebaseUser user =FirebaseAuth.getInstance().getCurrentUser();
+
+    private void setUserProfileUrl(Uri uri) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
                 .setPhotoUri(uri)
                 .build();

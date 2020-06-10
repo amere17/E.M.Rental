@@ -23,8 +23,8 @@
 
     <Button
         android:id="@+id/button8"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="215dp"
+        android:layout_height="53dp"
         android:text="Add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

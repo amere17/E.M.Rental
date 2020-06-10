@@ -8,20 +8,28 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.renderscript.ScriptGroup;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import static java.lang.Math.min;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,9 +40,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.paypal.android.sdk.m;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,6 +66,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class OrderActivity extends AppCompatActivity {
+    private static final int TAKE_IMAGE_CODE = 1000;
     DatabaseReference ref, ref2;
     DocumentReference dr, dr2;
     Button OrderBtn, StatusBtn,DeleteTool,ShareBtn;
@@ -61,6 +74,7 @@ public class OrderActivity extends AppCompatActivity {
     TextView tName, tPrice, tLocation, tType, tOwner;
     Order order;
     CheckBox cb;
+    ImageView tIV;
     public String userIdB;
     public String dealId;
     String toolId,id;
@@ -88,6 +102,7 @@ public class OrderActivity extends AppCompatActivity {
         DeleteTool = findViewById(R.id.delToolbtn);
         cb= findViewById(R.id.termsCB);
         ShareBtn = findViewById(R.id.ShareBtn);
+        tIV = findViewById(R.id.ToolIV);
         ShareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,6 +147,14 @@ public class OrderActivity extends AppCompatActivity {
                             tOwner.setText(owner);
                         }
                     });
+                    final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                            child("ToolImages").child(toolId+ ".jpeg");
+                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Glide.with(OrderActivity.this).load(uri).into(tIV);
+                        }
+                    });
                     //String currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     if (userIdA.equals(userIdB)) {
                         StatusBtn.setVisibility(View.VISIBLE);
@@ -143,6 +166,7 @@ public class OrderActivity extends AppCompatActivity {
                         StatusBtn.setVisibility(View.INVISIBLE);
                         DeleteTool.setVisibility(View.INVISIBLE);
                         cb.setVisibility(View.VISIBLE);
+                        tIV.setEnabled(false);
                     }
                     if (documentSnapshot.getString("status").equals("0")) {
                         StatusBtn.setText("End");
@@ -160,7 +184,16 @@ public class OrderActivity extends AppCompatActivity {
                 }
             }
         });
+        tIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    handleImageClick(v);
+                } catch (RuntimeException e) {
 
+                }
+            }
+        });
 
         tOwner.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -362,6 +395,71 @@ public class OrderActivity extends AppCompatActivity {
         } catch(Exception e) {
             //e.toString();
         }
+    }
+
+    public void handleImageClick(View view) {
+        Intent i1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+        if (i1.resolveActivity(getPackageManager()) != null)
+            startActivityForResult(i1, TAKE_IMAGE_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == TAKE_IMAGE_CODE && resultCode == RESULT_OK) {
+            Bitmap b = (Bitmap) data.getExtras().get("data");
+            tIV.setImageBitmap(b);
+            handleUpload(b);
+        }
+    }
+
+    private void handleUpload(Bitmap b) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                child("ToolImages").child(toolId+ ".jpeg");
+        reference.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                getDownloadUrl(reference);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(OrderActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+    }
+
+    private void getDownloadUrl(StorageReference reference) {
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Toast.makeText(OrderActivity.this,"onSuccess ", Toast.LENGTH_LONG).show();
+                setUserProfileUrl(uri);
+            }
+        });
+    }
+
+    private void setUserProfileUrl(Uri uri) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+        user.updateProfile(request).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(OrderActivity.this, "Updated Successfully", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(OrderActivity.this, "Tool Image Failed...", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
 }
