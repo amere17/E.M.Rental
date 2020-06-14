@@ -106,7 +106,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         //---------------- get firebase data for current user --------------
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
-
+        pIV.setImageResource(R.drawable.logo);
         if (extraStr == null || extraStr.getString(mString).equals(fAuth.getCurrentUser().getUid().trim())) {
             userId = fAuth.getCurrentUser().getUid();
         } else {
@@ -147,12 +147,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 paypaltv.setText(documentSnapshot.getString("PayPal"));
                 rate = documentSnapshot.getString("rate");
                 ratetv.setText(rate + "/5");
+
                 final StorageReference reference = FirebaseStorage.getInstance().getReference().
                         child("ProfileImages").child(userId + ".jpeg");
                 reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Glide.with(ProfileActivity.this).load(uri).into(pIV);
+                        if(reference.getDownloadUrl()!=null)
+                            Glide.with(ProfileActivity.this).load(uri).into(pIV);
                     }
                 });
 

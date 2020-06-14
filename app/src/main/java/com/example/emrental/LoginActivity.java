@@ -26,8 +26,14 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
-public class  LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
     public EditText emailIdl, passwordIdl;
     Button signInBtn;
@@ -76,6 +82,7 @@ public class  LoginActivity extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(LoginActivity.this, "Try to login again", Toast.LENGTH_SHORT).show();
                             } else {
+                                DeleteAndSetToken();
                                 finish();
                                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             }
@@ -83,6 +90,8 @@ public class  LoginActivity extends AppCompatActivity {
                     });
                 }
             }
+
+
         });
         //------------------- Button to move this activity to Sign Up Activity -------------------
         signUptv.setOnTouchListener(new View.OnTouchListener() {
@@ -96,6 +105,12 @@ public class  LoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void DeleteAndSetToken() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        String refreshToken = FirebaseInstanceId.getInstance().getToken();
+        FirebaseDatabase.getInstance().getReference("Tokens").child(firebaseUser.getUid()).setValue(refreshToken);
     }
 
     //--------------------- Function for Firebase Data ----------------------

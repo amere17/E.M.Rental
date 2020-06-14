@@ -110,7 +110,7 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void processPayment() {
         PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)),
-                "USD",mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
+                "ILS",mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
         payPalPayment.payeeEmail(mOwner.getText().toString().trim());
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);

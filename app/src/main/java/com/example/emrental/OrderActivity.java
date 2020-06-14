@@ -1,19 +1,25 @@
 package com.example.emrental;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
-import android.renderscript.ScriptGroup;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -22,9 +28,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import static java.lang.Math.min;
+import static android.app.Notification.DEFAULT_SOUND;
+import static android.app.Notification.DEFAULT_VIBRATE;
 
 import com.bumptech.glide.Glide;
+import com.example.emrental.SendNotificationPack.APIService;
+import com.example.emrental.SendNotificationPack.Client;
+import com.example.emrental.SendNotificationPack.Data;
+import com.example.emrental.SendNotificationPack.MyResponse;
+import com.example.emrental.SendNotificationPack.NotificationSender;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,19 +55,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.paypal.android.sdk.m;
+import com.squareup.okhttp.ResponseBody;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -65,31 +70,39 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 public class OrderActivity extends AppCompatActivity {
     private static final int TAKE_IMAGE_CODE = 1000;
     DatabaseReference ref, ref2;
     DocumentReference dr, dr2;
-    Button OrderBtn, StatusBtn,DeleteTool,ShareBtn;
+    Button OrderBtn, StatusBtn, DeleteTool, ShareBtn;
     FirebaseFirestore fstore;
-    TextView tName, tPrice, tLocation, tType, tOwner;
+    TextView tName, tPrice, tLocation, tType, tOwner, tTimer;
     Order order;
     CheckBox cb;
     ImageView tIV;
     public String userIdB;
     public String dealId;
-    String toolId,id;
+    String toolId;
     public Date startDate;
     public Date endDate;
+    private APIService apiService;
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public String userIdA;
+    Map<String, String> mToolList = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-
         setContentView(R.layout.activity_order);
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+
         ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         ref2 = FirebaseDatabase.getInstance().getReference().child("tools");
         StatusBtn = findViewById(R.id.StatusBtn);
@@ -100,7 +113,7 @@ public class OrderActivity extends AppCompatActivity {
         tType = findViewById(R.id.tType);
         tOwner = findViewById(R.id.tOwner);
         DeleteTool = findViewById(R.id.delToolbtn);
-        cb= findViewById(R.id.termsCB);
+        cb = findViewById(R.id.termsCB);
         ShareBtn = findViewById(R.id.ShareBtn);
         tIV = findViewById(R.id.ToolIV);
         ShareBtn.setOnClickListener(new View.OnClickListener() {
@@ -143,44 +156,11 @@ public class OrderActivity extends AppCompatActivity {
                     dr2.addSnapshotListener(OrderActivity.this, new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                            String owner = tOwner.getText() + " " + documentSnapshot.getString("Full Name");
+                            String owner = documentSnapshot.getString("Full Name");
                             tOwner.setText(owner);
                         }
                     });
-                    final StorageReference reference = FirebaseStorage.getInstance().getReference().
-                            child("ToolImages").child(toolId+ ".jpeg");
-                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Glide.with(OrderActivity.this).load(uri).into(tIV);
-                        }
-                    });
-                    //String currUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    if (userIdA.equals(userIdB)) {
-                        StatusBtn.setVisibility(View.VISIBLE);
-                        OrderBtn.setVisibility(View.INVISIBLE);
-                        DeleteTool.setVisibility(View.VISIBLE);
-                        cb.setVisibility(View.INVISIBLE);
-                    } else {
-                        OrderBtn.setVisibility(View.VISIBLE);
-                        StatusBtn.setVisibility(View.INVISIBLE);
-                        DeleteTool.setVisibility(View.INVISIBLE);
-                        cb.setVisibility(View.VISIBLE);
-                        tIV.setEnabled(false);
-                    }
-                    if (documentSnapshot.getString("status").equals("0")) {
-                        StatusBtn.setText("End");
-                        OrderBtn.setText("InProgress");
-                        OrderBtn.setClickable(false);
-                    } else {
-                        StatusBtn.setText("InProgress");
-                        OrderBtn.setText("Order");
-                        OrderBtn.setClickable(true);
-                    }
-
-                    if (documentSnapshot.getString("status").equals("1") && !userIdB.equals(userIdA)) {
-                        updateStatus();
-                    }
+                    setView(documentSnapshot);
                 }
             }
         });
@@ -204,27 +184,22 @@ public class OrderActivity extends AppCompatActivity {
                 finish();
             }
         });
-
         OrderBtn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-               if(cb.isChecked()){
-                Map<String, String> mToolList = new HashMap<>();
-                mToolList.put("Owner", userIdA);
-                mToolList.put("User", userIdB);
-                mToolList.put("ToolId", toolId);
-                mToolList.put("Status", "A");
-                mToolList.put("start", "null");
-                mToolList.put("end", "null");
-                mToolList.put("totalPrice", "null");
-                ref.push().setValue(mToolList);
-                finish();
-               }else{
-                   Toast.makeText(OrderActivity.this, "You Must Read The Terms", Toast.LENGTH_LONG).show();
-               }
+                if (cb.isChecked()) {
+                    createDeal();
+                    showNotificationOngoing(getBaseContext(), "E.M.Rental", "20 Minutes To PickUp The Tool\n" +
+                            "Warning: Rental Time > 10 Hours = Total Price *2");
+                    send(mToolList.get("Owner"));
+                    getDiffDates();
+                    StartNewActivity();
+                } else {
+                    Toast.makeText(OrderActivity.this, "You Must Read The Terms", Toast.LENGTH_LONG).show();
+                }
             }
         });
-
         order = new Order();
         StatusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,9 +232,9 @@ public class OrderActivity extends AppCompatActivity {
                                         Toast.makeText(OrderActivity.this,
                                                 "Done! Payout will appear in your PayPal Account", Toast.LENGTH_LONG).show();
                                     }
-                                }
 
-                                finish();
+                                }
+                                StartNewActivity();
                             }
                         }
                     }
@@ -275,13 +250,24 @@ public class OrderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DeleteItem();
-                dr.delete();
-                Intent i = new Intent(OrderActivity.this, HomeActivity.class);
-                finish();
-                startActivity(i);
             }
         });
 
+    }
+
+    private void send(String id) {
+        FirebaseDatabase.getInstance().getReference().child("Tokens").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String usertoken = dataSnapshot.getValue(String.class).trim();
+                sendNotifications(usertoken, "E.M.Rental", "New Order");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     void updateStatus() {
@@ -329,33 +315,66 @@ public class OrderActivity extends AppCompatActivity {
         long seconds = diff / 1000;
         long minutes = seconds / 60;
         long hours = minutes / 60;
-        long days = hours / 24;
         double m = (double) minutes;
         double h = (double) hours;
-        double d = (double) days;
-        total = (m / 60 + h + d * 24) * mprice;
+        total = (m / 60 + h) * mprice;
+        if (h > 10)
+            total *= 2;
         str = String.format("%.2f", total);
 
 
         return str;
     }
 
-    public String getDiffDates(long day, long hours, long minutes) {
-        String str = day + ":" + hours + ":" + minutes;
-        return str;
+    public void deleteDeal() {
+        FirebaseDatabase.getInstance().getReference()
+                .child("Deals").child(dealId).removeValue();
+        dr.update("status", "1");
     }
 
-    public void DeleteItem(){
+    public void getDiffDates() {
+        new CountDownTimer(20000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                Log.v("OrderActivity", "Seconds Remaining:" + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                ref.orderByChild(toolId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot deal : dataSnapshot.getChildren()) {
+                            Order order = deal.getValue(Order.class);
+                            if (order.getStatus().equals("A")) {
+                                dealId = deal.getKey();
+                                deleteDeal();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }.start();
+
+    }
+
+    public void DeleteItem() {
         FirebaseDatabase.getInstance().getReference()
                 .child("tools").child(toolId).removeValue();
+        dr.delete();
+        Intent i = new Intent(OrderActivity.this, HomeActivity.class);
+        finish();
+        startActivity(i);
     }
 
     public void termsDialog() throws IOException {
-        AlertDialog.Builder adBuilder = new AlertDialog.Builder(OrderActivity.this,R.style.Theme_AppCompat_Dialog_Alert);
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(OrderActivity.this, R.style.Theme_AppCompat_Dialog_Alert);
         adBuilder.setTitle("Terms & Conditions");
-        File mFolder = new File(getFilesDir() + "/assets");
-        File imgFile = new File(mFolder.getAbsolutePath() + "/terms.txt");
-        adBuilder.setMessage(readFile(imgFile.getPath()));
+        adBuilder.setMessage(readFile());
         adBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -366,15 +385,15 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
-    private String readFile(String path) throws IOException {
+    private String readFile() throws IOException {
         BufferedReader reader = null;
-        String mLine,full="";
+        String mLine, full = "";
         try {
             reader = new BufferedReader(
                     new InputStreamReader(getAssets().open("terms.txt")));
             while ((mLine = reader.readLine()) != null) {
-                full+=mLine;
-                full+='\n';
+                full += mLine;
+                full += '\n';
             }
 
         } finally {
@@ -383,16 +402,16 @@ public class OrderActivity extends AppCompatActivity {
         return full;
     }
 
-    private void Share(){
+    private void Share() {
         try {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, "E.M.Rental");
-            String shareMessage= "\nLet me recommend you this Tool From E.M.Rental\n";
-            shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + OrderActivity.this +"\n\n";
+            String shareMessage = "\nLet me recommend you this Tool From E.M.Rental\n";
+            shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + OrderActivity.this + "\n\n";
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
             startActivity(Intent.createChooser(shareIntent, "choose one"));
-        } catch(Exception e) {
+        } catch (Exception e) {
             //e.toString();
         }
     }
@@ -418,7 +437,7 @@ public class OrderActivity extends AppCompatActivity {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final StorageReference reference = FirebaseStorage.getInstance().getReference().
-                child("ToolImages").child(toolId+ ".jpeg");
+                child("ToolImages").child(toolId + ".jpeg");
         reference.putBytes(baos.toByteArray()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -437,7 +456,7 @@ public class OrderActivity extends AppCompatActivity {
         reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Toast.makeText(OrderActivity.this,"onSuccess ", Toast.LENGTH_LONG).show();
+                Toast.makeText(OrderActivity.this, "onSuccess ", Toast.LENGTH_LONG).show();
                 setUserProfileUrl(uri);
             }
         });
@@ -462,4 +481,117 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    private void setView(DocumentSnapshot documentSnapshot) {
+        final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                child("ToolImages").child(toolId + ".jpeg");
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Glide.with(OrderActivity.this).load(uri).into(tIV);
+            }
+        });
+        if (userIdA.equals(userIdB)) {
+            StatusBtn.setVisibility(View.VISIBLE);
+            OrderBtn.setVisibility(View.INVISIBLE);
+            DeleteTool.setVisibility(View.VISIBLE);
+            cb.setVisibility(View.INVISIBLE);
+        } else {
+            OrderBtn.setVisibility(View.VISIBLE);
+            StatusBtn.setVisibility(View.INVISIBLE);
+            DeleteTool.setVisibility(View.INVISIBLE);
+            cb.setVisibility(View.VISIBLE);
+            tIV.setEnabled(false);
+        }
+        if (documentSnapshot.getString("status").equals("0")) {
+            StatusBtn.setText("End");
+            OrderBtn.setText("Not Available, InProgress");
+            OrderBtn.setClickable(false);
+            StatusBtn.setClickable(true);
+        } else if (documentSnapshot.getString("status").equals("2")) {
+            OrderBtn.setText("Not Available, Waiting for PickUp");
+            StatusBtn.setText("Tap Here To Start The Rental Time (New Order)");
+            OrderBtn.setClickable(false);
+            StatusBtn.setClickable(true);
+        } else {
+            StatusBtn.setText("No Orders");
+            StatusBtn.setClickable(false);
+            OrderBtn.setText("Order");
+            OrderBtn.setClickable(true);
+        }
+
+        if (documentSnapshot.getString("status").equals("1") && !userIdB.equals(userIdA)) {
+            updateStatus();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void showNotificationOngoing(Context context, String title, String content) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String name = "Name";
+            String description = "Des";
+            int importance = NotificationManager.IMPORTANCE_HIGH; //Important for heads-up notification
+            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            channel.setDescription(description);
+            channel.setShowBadge(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.logo);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "1")
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
+                .setLargeIcon(bitmapdraw.getBitmap())
+                .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE) //Important for heads-up notification
+                .setPriority(Notification.PRIORITY_MAX); //Important for heads-up notification
+        Notification buildNotification = mBuilder.build();
+        NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(001, buildNotification);
+    }
+
+    private void createDeal() {
+        mToolList.put("Owner", userIdA);
+        mToolList.put("User", userIdB);
+        mToolList.put("ToolId", toolId);
+        mToolList.put("Status", "A");
+        mToolList.put("start", "null");
+        mToolList.put("end", "null");
+        mToolList.put("totalPrice", "null");
+        ref.push().setValue(mToolList);
+        dr.update("status", "2");
+    }
+
+    private void StartNewActivity() {
+        try {
+            finish();
+            Intent i = new Intent(OrderActivity.this, HomeActivity.class);
+            startActivity(i);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void sendNotifications(String usertoken, String title, String message) {
+        Data data = new Data(title, message,userIdB,toolId,tName.getText().toString());
+        NotificationSender sender = new NotificationSender(data, usertoken);
+        apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().success != 1) {
+                        Toast.makeText(OrderActivity.this, "Failed ", Toast.LENGTH_LONG);
+                    }else {
+                        Toast.makeText(OrderActivity.this, "sent", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyResponse> call, Throwable t) {
+
+            }
+        });
+    }
 }
