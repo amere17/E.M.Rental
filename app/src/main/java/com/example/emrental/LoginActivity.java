@@ -116,6 +116,8 @@ public class LoginActivity extends AppCompatActivity {
     //--------------------- Function for Firebase Data ----------------------
     protected void onStart() {
         super.onStart();
-        fbAuth.addAuthStateListener(mAuthL);
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            fbAuth.addAuthStateListener(mAuthL);
+        }
     }
 }

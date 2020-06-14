@@ -237,9 +237,18 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         logoutbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeValue();
                 FirebaseAuth.getInstance().signOut();
-                Intent intToLogin = new Intent(ProfileActivity.this, LoginActivity.class);
-                startActivity(intToLogin);
+                if(FirebaseAuth.getInstance().getCurrentUser() == null){
+                    //closing this activity
+                    finish();
+                    //starting login activity
+                    Intent intToLogin = new Intent(ProfileActivity.this, LoginActivity.class);
+                    startActivity(intToLogin);
+                }
+
             }
         });
         phonetv.setOnClickListener(new View.OnClickListener() {

@@ -345,7 +345,7 @@ public class OrderActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot deal : dataSnapshot.getChildren()) {
                             Order order = deal.getValue(Order.class);
-                            if (order.getStatus().equals("A")) {
+                            if (order.getStatus().equals("A")&&order.getToolId().equals(toolId)) {
                                 dealId = deal.getKey();
                                 deleteDeal();
                             }
