@@ -18,10 +18,11 @@ public class UpdateProfile extends AppCompatDialogFragment {
     private dialogListner listner;
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.drawable.dialog_rd);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.activity_update_profile, null);
-        builder.setView(view).setTitle("Update Profile").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+        builder.setView(view).setTitle("Update profile").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

@@ -6,16 +6,22 @@ Subject: The home display for the application
 package com.example.emrental;
 //---------------- Android imports ------------------------
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -29,6 +35,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,6 +55,7 @@ import javax.annotation.Nullable;
 
 //-------------------- Main Activity for users after login ------------------
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final String TAG = "Error";
     //------------- Variables & Objects -------------------
     GoogleMap mMap;
     Button AddToolBtn, ProfileBtn, SearchBtn;
@@ -69,7 +77,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         ProfileBtn = (Button) findViewById(R.id.button11);
         AddToolBtn = (Button) findViewById(R.id.button12);
         SearchBtn = (Button) findViewById(R.id.btnSearch);
-        //-------------- method for User Profile Button -------------
+
+        //-------------- method for User profile Button -------------
         ProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,7 +86,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(profIntent);
             }
         });
-        //-------------- method for Add Tool Button -------------
+        //-------------- method for add Tool Button -------------
         AddToolBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(addIntent);
             }
         });
-        //-------------- method for Search Button -------------
+        //-------------- method for search Button -------------
         SearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,11 +103,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         //------------- request permission for the location service -----------
-        requestPer();
         client = LocationServices.getFusedLocationProviderClient(this);
-
-        // ------------ Find the current user location ----------
         getCurrLocation();
+        // ------------ Find the current user location ----------
 
         // ------------ Methods for the view of the map ----------
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -106,7 +113,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void getCurrLocation() {
-       if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         client.getLastLocation().addOnSuccessListener(HomeActivity.this, new OnSuccessListener<Location>() {
@@ -121,42 +128,51 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        getCurrLocation();
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.mapstyle));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
         // ------------------ Read data from the tools list in Firebase ----------------------
         // ------------------ Put markers on the map for all the tools  ----------------------
 
-           toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        String location = documentSnapshot.get("location").toString();
-                        Double mLat, mLong;
-                        String parts[] = location.split(" ");
-                        // -------- Coordinates for each tool --------
-                        mLat = Double.parseDouble(parts[0]);
-                        mLong = Double.parseDouble(parts[1]);
-                        LatLng toolLocation = new LatLng(mLat, mLong);
-                        // -------- Match the marker icon with the type of the tool ----------
-                        if (documentSnapshot.get("type").equals("Bike")) {
-                            BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_bike);
-                            mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                        } else if (documentSnapshot.get("type").equals("Car")) {
-                            BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_car);
-                            mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                        } else {
-                            BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_scooter);
-                            mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
-                        }
-                        // -------------------- Zoom in to the current user location -------------------
-                        // ------------- Error when there is a problem to read the current location ----
-                        if (currLocation != null) {
-                            LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 8));
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Error! Please Turn on GPS", Toast.LENGTH_LONG).show();
-                        }
+        toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    String location = documentSnapshot.get("location").toString();
+                    Double mLat, mLong;
+                    String parts[] = location.split(" ");
+                    // -------- Coordinates for each tool --------
+                    mLat = Double.parseDouble(parts[0]);
+                    mLong = Double.parseDouble(parts[1]);
+                    LatLng toolLocation = new LatLng(mLat, mLong);
+                    // -------- Match the marker icon with the type of the tool ----------
+                    if (documentSnapshot.get("type").equals("Bike")) {
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_bike);
+                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                    } else if (documentSnapshot.get("type").equals("Car")) {
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_car);
+                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
+                    } else {
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.icon_scooter);
+                        mMap.addMarker(new MarkerOptions().snippet(documentSnapshot.getId()).position(toolLocation).icon(BitmapDescriptorFactory.fromBitmap(icon_Bitmap(bitmapdraw))));
                     }
+                    // -------------------- Zoom in to the current user location -------------------
+                    // ------------- Error when there is a problem to read the current location ----
                 }
-            });
+            }
+        });
 
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -182,15 +198,57 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void requestPer() {
-        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            getCurrentLocation();
+        } else {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+            // Setting Dialog Title
+            alertDialog.setTitle("GPS is settings");
+
+            // Setting Dialog Message
+            alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+
+            // On pressing Settings button
+            alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+
+            // on pressing cancel button
+            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            // Showing Alert Message
+            alertDialog.show();
+        }
     }
 
     // -------- Function to create icon for each type of tool --------
     public Bitmap icon_Bitmap(BitmapDrawable markerPath) {
-        int height = 100;
-        int width = 100;
+        int height = 300;
+        int width = 500;
         Bitmap b = markerPath.getBitmap();
         return Bitmap.createScaledBitmap(b, width, height, false);
+    }
+
+    public void getCurrentLocation() {
+        if (currLocation != null) {
+            LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 8));
+        } else {
+            requestPer();
+            getCurrLocation();
+        }
+    }
+
+    public void getCurrentLocation(View view) {
+        getCurrentLocation();
     }
 }

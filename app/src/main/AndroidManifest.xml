@@ -8,12 +8,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <permission android:name="com.example.emrental.permission.CAMERA"/>
-    <permission android:name="com.example.emrental.permission.WRITE_EXTERNAL_STORAGE"/>
-    <permission android:name="com.example.emrental.permission.READ_EXTERNAL_STORAGE"/>
+
+    <permission android:name="com.example.emrental.permission.CAMERA" />
+    <permission android:name="com.example.emrental.permission.WRITE_EXTERNAL_STORAGE" />
+    <permission android:name="com.example.emrental.permission.READ_EXTERNAL_STORAGE" />
     <permission
         android:name="com.example.emrental.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
@@ -25,8 +26,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DealDisplay" android:theme="@style/Theme.AppCompat.Dialog"></activity>
-        <activity android:name=".UpdateProfile"
+        <activity
+            android:name=".DealDisplay"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".UpdateProfile"
             tools:ignore="Instantiatable" />
         <activity
             android:name=".PaymentDetails"
@@ -41,11 +45,16 @@
             tools:ignore="LockedOrientationActivity">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.SEND" />
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:host="play.google.com" android:scheme="http"/>
-            <data android:host="play.google.com" android:scheme="https"/>
-            </intent-filter></activity>
+                <action android:name="android.intent.action.VIEW" />
 
+                <data
+                    android:host="play.google.com"
+                    android:scheme="http" />
+                <data
+                    android:host="play.google.com"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".AddActivity"
             android:configChanges="orientation|screenSize"
@@ -94,6 +103,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
+
         <service
             android:name=".SendNotificationPack.MyFireBaseMessagingService"
             android:enabled="true"

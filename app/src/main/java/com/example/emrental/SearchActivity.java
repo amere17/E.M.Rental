@@ -59,6 +59,7 @@ public class SearchActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_search);
         //-------------- Attaching variables & objects with XML file ----------
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         item = new Tool();
         etLocation = findViewById(R.id.editText5);
         etPrice = (RangeSeekBar)findViewById(R.id.rangeSeekBar );

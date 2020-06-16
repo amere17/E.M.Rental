@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:name="android:windowBackground">@android:color/transparent</item>
+    <item android:name="android:windowIsFloating">false</item>
+    <item android:name="android:windowNoTitle">true</item>
+    <solid android:color="#009688" />
+    <corners android:radius="30dp" />
+    <padding
+        android:left="10dp"
+        android:top="10dp"
+        android:right="10dp"
+        android:bottom="10dp" />
+</shape>

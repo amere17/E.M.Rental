@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (TextUtils.isEmpty(paypal)) {
                     paypalId.setError("PayPal is Required");
-                    Toast.makeText(MainActivity.this, "\"Search in Google: How to Create a PayPal Account\"", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Create new PayPal Account", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!paypal.contains("@")) {
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     passwordId.setError("Password must be >= 8");
                     return;
                 }
-                // ----------------------- Add the new user data to the Firebase --------------
+                // ----------------------- add the new user data to the Firebase --------------
                 fbAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

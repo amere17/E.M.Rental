@@ -4,25 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#009688"
+    android:background="@drawable/dialog_screen"
     android:padding="1dp"
     tools:context=".OrderActivity">
 
-    <Button
-        android:id="@+id/StatusBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="No Order"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="2dp" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="323dp"
+        android:layout_width="385dp"
+        android:layout_height="274dp"
         android:layout_marginTop="1dp"
-        app:layout_constraintTop_toBottomOf="@+id/ToolIV"
-        tools:layout_editor_absoluteX="1dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ToolIV">
 
         <TextView
             android:id="@+id/tType"
@@ -33,16 +26,16 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
+            android:layout_marginTop="16dp"
+            android:background="#8BC34A"
             android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="13dp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tLocation"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tName"
-            app:layout_constraintVertical_bias="0.45" />
+            app:layout_constraintTop_toBottomOf="@+id/tPrice" />
 
         <TextView
             android:id="@+id/tName"
@@ -50,6 +43,7 @@
             android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
+            android:background="#8BC34A"
             android:gravity="center"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
@@ -66,13 +60,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/paypal"
-            android:layout_marginTop="124dp"
+            android:layout_marginTop="24dp"
+            android:background="#8BC34A"
             android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="13dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.525"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tName" />
 
@@ -81,36 +76,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/tPrice"
+            android:layout_marginTop="56dp"
+            android:background="#8BC34A"
             android:gravity="center"
             android:text=""
             android:textColor="#FFFFFF"
             android:textSize="13dp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tPrice"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tName"
-            app:layout_constraintVertical_bias="0.776" />
+            app:layout_constraintTop_toBottomOf="@+id/tPrice" />
 
         <TextView
             android:id="@+id/tOwner"
             android:layout_width="match_parent"
             android:layout_height="17dp"
+            android:background="#8BC34A"
             android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="13dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tPrice"
-            app:layout_constraintVertical_bias="0.272" />
+            app:layout_constraintTop_toBottomOf="@+id/tLocation"
+            app:layout_constraintVertical_bias="0.294" />
 
         <CheckBox
             android:id="@+id/termsCB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/cardview_dark_background"
             android:text="I Agree to Terms"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -121,47 +119,75 @@
 
     <Button
         android:id="@+id/delToolbtn"
+        android:layout_width="58dp"
+        android:layout_height="41dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/delete_button"
+        app:layout_constraintBottom_toTopOf="@+id/ToolIV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.433" />
+
+    <TextView
+        android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Delete Tool"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.94"
+        android:text="Order"
+        android:textColor="#020201"
+        android:textSize="30sp"
+        android:textStyle="normal|bold"
+        app:layout_constraintBottom_toTopOf="@+id/ToolIV"
+        app:layout_constraintEnd_toStartOf="@+id/delToolbtn"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="0.948" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/ShareBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
         android:layout_marginTop="8dp"
-        android:text="Share Button"
+        android:background="@drawable/button_share"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/delToolbtn"
-        app:layout_constraintHorizontal_bias="0.128"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.777" />
 
     <Button
         android:id="@+id/bOrder"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:text="Order"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp" />
+        android:background="@drawable/order_button"
+        app:layout_constraintBottom_toTopOf="@+id/ShareBtn"
+        app:layout_constraintTop_toTopOf="@+id/StatusBtn"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="2dp" />
+
+    <Button
+        android:id="@+id/StatusBtn"
+        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0F6F54"
+        app:layout_constraintBottom_toTopOf="@+id/ShareBtn"
+        app:layout_constraintEnd_toEndOf="@+id/bOrder"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintVertical_bias="0.875" />
 
     <ImageView
         android:id="@+id/ToolIV"
         android:layout_width="match_parent"
         android:layout_height="189dp"
+        android:layout_marginBottom="424dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/StatusBtn"
-        app:layout_constraintVertical_bias="0.075"
         app:srcCompat="@drawable/logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

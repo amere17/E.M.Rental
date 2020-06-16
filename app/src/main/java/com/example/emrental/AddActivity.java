@@ -69,6 +69,8 @@ public class AddActivity extends AppCompatActivity {
         final TextView tv = findViewById(R.id.textView2);
         final RadioGroup mType = findViewById(R.id.type);
         tv.setVisibility(View.INVISIBLE);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         //----------------- Call function to request permission for Location service ---------
         requestPer();
         //----------------- Current location for the item to add a marker on the map -------
@@ -121,7 +123,7 @@ public class AddActivity extends AppCompatActivity {
                 // Validation to add tool with the right inputs
                 if(!TextUtils.isEmpty(mToolName)&& !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location)&& radioButton.isChecked()){
 
-                    // Add new tool to realtime database and the collection firebase "tools"
+                    // add new tool to realtime database and the collection firebase "tools"
                     mToolList.put("name",mToolName);
                     mToolList.put("price",mToolPrice);
                     mToolList.put("userid",mUserUid);

@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
 
     //----------------------- Variables & Objects -------------------
     TextView phonetv, emailtv, fullnametv, paypaltv, ratetv, dealtv;
-    Button logoutbtn, edit;
+    Button logoutbtn, edit, editProfileImage;
     ListView dealslv, toolslv;
     FirebaseFirestore fstore;
     FirebaseAuth fAuth;
@@ -90,6 +91,8 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_profile);
         Bundle extraStr = getIntent().getExtras();
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         String mString = "UserId";
         //-----------------  Attaching objects with XML file --------------
         phonetv = findViewById(R.id.phone);
@@ -101,8 +104,18 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         toolslv = findViewById(R.id.toolsl);
         ratetv = findViewById(R.id.rateResult);
         edit = findViewById(R.id.editProfile);
-        dealtv = findViewById(R.id.dealst);
+        editProfileImage = findViewById(R.id.editprofileimage);
         pIV = (ImageView) findViewById(R.id.profileIV);
+        TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
+        tabHost.setup();
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("Tools");
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("Deals");
+        tab1.setIndicator("Tools");
+        tab1.setContent(R.id.Tools);
+        tab2.setIndicator("Deals");
+        tab2.setContent(R.id.Deals);
+        tabHost.addTab(tab1);
+        tabHost.addTab(tab2);
         //---------------- get firebase data for current user --------------
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
@@ -114,13 +127,15 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             logoutbtn.setVisibility(View.INVISIBLE);
             dealslv.setVisibility(View.INVISIBLE);
             edit.setVisibility(View.INVISIBLE);
-            dealtv.setVisibility(View.INVISIBLE);
+            editProfileImage.setVisibility(View.INVISIBLE);
+            tabHost.getTabWidget().removeView(tabHost.getTabWidget().getChildTabViewAt(1));
             pIV.setEnabled(false);
         }
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ProfileActivity.this, "Update Your Profile Image By Clicking on it", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, "Update Your profile Image By Clicking on it", Toast.LENGTH_LONG).show();
+
                 openDialog();
             }
 
@@ -175,7 +190,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                     Map<String, Object> d = documentSnapshot.getData();
                     if (d.get("userid").equals(userId)) {
                         vec.addElement(documentSnapshot.getId());
-                        mArraylist.add(d.get("name") + "\n" + d.get("price") + "\n" + d.get("type") + "\n" + d.get("address"));
+                        mArraylist.add(d.get("name") + "\n" + "Price: " + d.get("price") + "\n" + "Type: " + d.get("type") + "\n" + "Address: " + d.get("address"));
                     }
                 }
                 toolslv.setAdapter(itemArrayAdapter);
@@ -205,7 +220,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     order = ds.getValue(Order.class);
                     if ((order.getOwner().equals(userId) || order.getUser().equals(userId)) && order.getStatus().equals("D")) {
-                        mArraylist2.add(order.getTotalPrice() + "\n" + order.getEnd() + "\n");
+                        mArraylist2.add("Total Price: " + order.getTotalPrice() + "\n" + "Date: " + order.getStart());
                         vec2.addElement(ds.getKey());
                     }
 
@@ -276,7 +291,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         args.putString("Email", emailtv.getText().toString());
         args.putString("Phone", phonetv.getText().toString());
         update.setArguments(args);
-        update.show(getSupportFragmentManager(), "Update Profile");
+        update.show(getSupportFragmentManager(), "Update profile");
     }
 
     @Override
@@ -357,7 +372,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileActivity.this, "Profile Image Failed...", Toast.LENGTH_LONG).show();
+                Toast.makeText(ProfileActivity.this, "profile Image Failed...", Toast.LENGTH_LONG).show();
             }
         });
 

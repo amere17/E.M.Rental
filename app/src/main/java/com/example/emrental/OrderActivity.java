@@ -81,7 +81,7 @@ public class OrderActivity extends AppCompatActivity {
     DocumentReference dr, dr2;
     Button OrderBtn, StatusBtn, DeleteTool, ShareBtn;
     FirebaseFirestore fstore;
-    TextView tName, tPrice, tLocation, tType, tOwner, tTimer;
+    TextView tName, tPrice, tLocation, tType, tOwner, tTitle;
     Order order;
     CheckBox cb;
     ImageView tIV;
@@ -102,6 +102,7 @@ public class OrderActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_order);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         ref2 = FirebaseDatabase.getInstance().getReference().child("tools");
@@ -116,6 +117,7 @@ public class OrderActivity extends AppCompatActivity {
         cb = findViewById(R.id.termsCB);
         ShareBtn = findViewById(R.id.ShareBtn);
         tIV = findViewById(R.id.ToolIV);
+        tTitle = findViewById(R.id.textView5);
         ShareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -494,6 +496,7 @@ public class OrderActivity extends AppCompatActivity {
             StatusBtn.setVisibility(View.VISIBLE);
             OrderBtn.setVisibility(View.INVISIBLE);
             DeleteTool.setVisibility(View.VISIBLE);
+            tTitle.setText("Admin Page");
             cb.setVisibility(View.INVISIBLE);
         } else {
             OrderBtn.setVisibility(View.VISIBLE);

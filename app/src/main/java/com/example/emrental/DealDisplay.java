@@ -23,6 +23,7 @@ public class DealDisplay extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_deal_display);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         total= findViewById(R.id.dealtotal);
         end = findViewById(R.id.dealend);

@@ -60,7 +60,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
                 .setContentText(message + " For Tool With Name " + tool)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message + " For Tool With Name " + tool))
                 .setLargeIcon(bitmapdraw.getBitmap())
-                .addAction(R.drawable.logo, "Open Tenant Profile", pIntent)
+                .addAction(R.drawable.logo, "Open Tenant profile", pIntent)
                 .addAction(R.drawable.logo, "Open ُTool Page", pIntent1)
                 .setAutoCancel(true)
                 .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE); //Important for heads-up notification
