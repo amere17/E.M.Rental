@@ -22,7 +22,7 @@
     <ImageView
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:src="@drawable/logo"
+        android:src="@drawable/logo_tran"
         android:layout_marginBottom="50dp" />
 
     <EditText
@@ -32,6 +32,7 @@
         android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Email"
+        android:textColor="#FFFFFF"
         android:inputType="textEmailAddress"
         android:textColorHint="#FAF8F8" />
 
@@ -42,6 +43,7 @@
         android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Password"
+        android:textColor="#FFFFFF"
         android:inputType="textPassword"
         android:textColorHint="#F6F4F4" />
 

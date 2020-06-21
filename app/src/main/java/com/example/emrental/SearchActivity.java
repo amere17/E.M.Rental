@@ -114,7 +114,7 @@ public class SearchActivity extends AppCompatActivity {
                             && Double.valueOf(d.get("price").toString())<max)
                             || cbTypes.isEmpty()) {
                         vec.addElement(documentSnapshot.getId());
-                        mArraylist.add(d.get("name") + "\n" + d.get("price") + "\n" + d.get("type") + "\n" + d.get("address"));
+                        mArraylist.add(d.get("name") + "\n" + d.get("price") + " ₪/hr\n" + d.get("type") + "\n" + d.get("address"));
                     }
                 }
                 lvItems.setAdapter(itemArrayAdapter);

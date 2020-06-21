@@ -63,6 +63,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     public CollectionReference toolsList;
     FusedLocationProviderClient client;
     public Location currLocation = null;
+    FirebaseAuth fAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +102,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         //------------- request permission for the location service -----------
+        requestPerCurrent();
         client = LocationServices.getFusedLocationProviderClient(this);
         // ------------ Find the current user location ----------
         getCurrLocation();
@@ -236,7 +238,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void getCurrentLocation() {
         if (currLocation != null) {
             LatLng curLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 8));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 12));
         } else {
             requestPer();
         }
@@ -244,7 +246,10 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void getCurrentLocation(View view) {
         getCurrLocation();
-        ;
-        getCurrentLocation();
+    }
+
+    private void requestPerCurrent() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
     }
 }

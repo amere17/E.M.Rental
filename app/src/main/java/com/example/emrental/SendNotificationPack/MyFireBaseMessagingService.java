@@ -57,7 +57,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "1")
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(title)
-                .setContentText(message + " . Tool Name" + tool)
+                .setContentText(message + " (Tool Name: " + tool + ")")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message + " Tool Name " + tool))
                 .setLargeIcon(bitmapdraw.getBitmap())
                 .addAction(R.drawable.logo, "Open Tenant profile", pIntent)

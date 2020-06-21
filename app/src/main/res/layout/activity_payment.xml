@@ -108,12 +108,12 @@
 
             <TextView
                 android:id="@+id/txtPrice"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#075E54"
-                android:text="Price" />
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="Price (₪)"
+                android:textColor="#075E54" />
 
             <TextView
                 android:id="@+id/totalPrice"

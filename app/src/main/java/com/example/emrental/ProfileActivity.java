@@ -119,9 +119,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         //---------------- get firebase data for current user --------------
         fAuth = FirebaseAuth.getInstance();
         fstore = FirebaseFirestore.getInstance();
-        pIV.setImageResource(R.drawable.logo);
+        pIV.setImageResource(R.drawable.logo_green);
+
         if (extraStr == null || extraStr.getString(mString).equals(fAuth.getCurrentUser().getUid().trim())) {
-            userId = fAuth.getCurrentUser().getUid();
+            try {
+                userId = fAuth.getCurrentUser().getUid();
+            } catch (Exception e) {
+
+            }
         } else {
             userId = extraStr.getString(mString);
             logoutbtn.setVisibility(View.INVISIBLE);
@@ -152,35 +157,43 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             }
         });
         //------------ get all the data for the current user to display in the profile ------
-        DocumentReference dr = fstore.collection("Users").document(userId);
-        dr.addSnapshotListener(ProfileActivity.this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                phonetv.setText(documentSnapshot.getString("Phone"));
-                fullnametv.setText(documentSnapshot.getString("Full Name"));
-                emailtv.setText(documentSnapshot.getString("Email"));
-                paypaltv.setText(documentSnapshot.getString("PayPal"));
-                rate = documentSnapshot.getString("rate");
-                ratetv.setText(rate + "/5");
-                final StorageReference reference;
-                reference = FirebaseStorage.getInstance().getReference().
-                        child("ProfileImages").child(userId + ".jpeg");
+        if (fAuth.getCurrentUser() == null) {
+            finish();
+        } else {
+            DocumentReference dr = fstore.collection("Users").document(userId);
+            dr.addSnapshotListener(ProfileActivity.this, new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    try {
+                        phonetv.setText(documentSnapshot.getString("Phone"));
+                        fullnametv.setText(documentSnapshot.getString("Full Name"));
+                        emailtv.setText(documentSnapshot.getString("Email"));
+                        paypaltv.setText(documentSnapshot.getString("PayPal"));
+                        rate = documentSnapshot.getString("rate");
+                        ratetv.setText("Rate: " + rate + "/5");
+                        final StorageReference reference;
+                        reference = FirebaseStorage.getInstance().getReference().
+                                child("ProfileImages").child(userId + ".jpeg");
 
-                reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        if (reference.getDownloadUrl() != null)
-                            Glide.with(ProfileActivity.this).load(uri).into(pIV);
+                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                if (reference.getDownloadUrl() != null)
+                                    Glide.with(ProfileActivity.this).load(uri).into(pIV);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+                    } catch (Exception t) {
+                        finish();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
 
-                    }
-                });
-
-            }
-        });
+                }
+            });
+        }
         //--------------- fill the Tools list that published by the current user -------------------
         final ArrayAdapter<String> itemArrayAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, mArraylist);
         final ArrayAdapter<String> dealArrayAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, mArraylist2);
@@ -196,7 +209,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                     Map<String, Object> d = documentSnapshot.getData();
                     if (d.get("userid").equals(userId)) {
                         vec.addElement(documentSnapshot.getId());
-                        mArraylist.add(d.get("name") + "\n" + "Price: " + d.get("price") + "\n" + "Type: " + d.get("type") + "\n" + "Address: " + d.get("address"));
+                        mArraylist.add(d.get("name") + "\n" + "Price: " + d.get("price") + " ₪/hr\n" + "Type: " + d.get("type") + "\n" + "Address: " + d.get("address"));
                     }
                 }
                 toolslv.setAdapter(itemArrayAdapter);
@@ -226,7 +239,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     order = ds.getValue(Order.class);
                     if (order.getOwner().equals(userId) || order.getUser().equals(userId)) {
-                        mArraylist2.add("Total Price: " + order.getTotalPrice() + "\n" + "Date: " + order.getStart() +
+                        mArraylist2.add("Total Price: " + order.getTotalPrice() + " ₪\n" + "Date: " + order.getStart() +
                                 "\n" + "Status: " + CheckStatus(order.getStatus()));
                         vec2.addElement(ds.getKey());
                     }
@@ -263,11 +276,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 FirebaseDatabase.getInstance().getReference()
                         .child("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeValue();
                 FirebaseAuth.getInstance().signOut();
-                if(FirebaseAuth.getInstance().getCurrentUser() == null){
+                if(FirebaseAuth.getInstance().getCurrentUser() == null) {
                     //closing this activity
-                    finish();
                     //starting login activity
-                    Intent intToLogin = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intToLogin = new Intent(ProfileActivity.this, LoginActivity.class);
+                    finish();
                     startActivity(intToLogin);
                 }
 

@@ -64,7 +64,7 @@
             android:background="#DBECD5"
             android:layout_marginBottom="15dp"
             android:ems="10"
-            android:hint="Price"
+            android:hint="Price(₪)/hr"
             android:shadowColor="#3F51B5"
             android:textColor="#075E54"
             android:textColorHint="#075E54"

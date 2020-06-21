@@ -97,6 +97,7 @@ public class PaymentActivity extends AppCompatActivity {
         amount = Float.parseFloat(m_Total);
         if (amount == 0) {
             mPay.setVisibility(View.INVISIBLE);
+            ref.child(m_OrderId).child("Status").setValue("D");
             Toast.makeText(PaymentActivity.this, "Nothing To Pay", Toast.LENGTH_LONG).show();
             new Handler().postDelayed(new Runnable() {
                 @Override

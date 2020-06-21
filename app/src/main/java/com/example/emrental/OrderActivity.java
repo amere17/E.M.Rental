@@ -55,7 +55,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.okhttp.ResponseBody;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -150,7 +149,7 @@ public class OrderActivity extends AppCompatActivity {
             public void onEvent(@Nullable final DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()) {
                     tName.setText(documentSnapshot.getString("name"));
-                    tPrice.setText(documentSnapshot.getString("price"));
+                    tPrice.setText(documentSnapshot.getString("price") + " ₪/hr");
                     tLocation.setText(documentSnapshot.getString("address"));
                     tType.setText(documentSnapshot.getString("type"));
                     userIdA = documentSnapshot.getString("userid");
@@ -262,18 +261,28 @@ public class OrderActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("Tokens").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String usertoken = dataSnapshot.getValue(String.class).trim();
-                sendNotifications(usertoken, "E.M.Rental", msg);
+                try {
+                    String usertoken = dataSnapshot.getValue(String.class).trim();
+                    sendNotifications(usertoken, "E.M.Rental", msg);
+                } catch (Exception e) {
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                try {
+                } catch (Exception e) {
+                }
             }
         });
+
     }
 
     void updateStatus() {
+        String string = tPrice.getText().toString().trim();
+        String[] parts = string.split(" ");
+        final String part1 = parts[0];
+        String part2 = parts[1];
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -284,7 +293,7 @@ public class OrderActivity extends AppCompatActivity {
                             && order.getToolId().trim().equals(toolId.trim())) {
                         try {
                             String mstr = getTotal(formatter.parse(order.getEnd()),
-                                    formatter.parse(order.getStart()), tPrice.getText().toString().trim());
+                                    formatter.parse(order.getStart()), part1);
                             ref.child(ds.getKey()).child("totalPrice").setValue(mstr);
                             order.setTotalPrice(mstr);
                         } catch (ParseException e) {
@@ -579,24 +588,28 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     public void sendNotifications(String usertoken, String title, String message) {
-        Data data = new Data(title, message,userIdB,toolId,tName.getText().toString());
+        Data data = new Data(title, message, userIdB, toolId, tName.getText().toString());
         NotificationSender sender = new NotificationSender(data, usertoken);
-        apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
-            @Override
-            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                if (response.code() == 200) {
-                    if (response.body().success != 1) {
-                        Toast.makeText(OrderActivity.this, "Failed ", Toast.LENGTH_LONG);
-                    }else {
-                        Toast.makeText(OrderActivity.this, "sent", Toast.LENGTH_LONG).show();
+        try {
+            apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
+                @Override
+                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                    if (response.code() == 200) {
+                        if (response.body().success != 1) {
+                            Toast.makeText(OrderActivity.this, "Failed ", Toast.LENGTH_LONG);
+                        } else {
+                            Toast.makeText(OrderActivity.this, "sent", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<MyResponse> call, Throwable t) {
+                @Override
+                public void onFailure(Call<MyResponse> call, Throwable t) {
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(OrderActivity.this, "Failed1 ", Toast.LENGTH_LONG);
 
-            }
-        });
+        }
     }
 }

@@ -40,8 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:textColor="#075E54"
-        android:text="Total:" />
+        android:text="Total (₪):"
+        android:textColor="#075E54" />
 
     <TextView
         android:id="@+id/textAmount"

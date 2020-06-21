@@ -54,7 +54,7 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            app:srcCompat="@drawable/logo" />
+            app:srcCompat="@drawable/logo_tran" />
 
         <TextView
             android:id="@+id/tName"

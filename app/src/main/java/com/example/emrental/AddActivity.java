@@ -41,16 +41,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+/**
+ * Add Activity
+ */
 public class AddActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
     FusedLocationProviderClient client;
     FirebaseFirestore mFireStore;
     DatabaseReference ref;
-    FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
+    FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     RadioButton radioButton;
     public String id;
-    Map<String,String> mToolList = new HashMap<>();
+    Map<String, String> mToolList = new HashMap<>();
     String result;
+
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +90,7 @@ public class AddActivity extends AppCompatActivity {
                 }
                 client.getLastLocation().addOnSuccessListener(AddActivity.this, new OnSuccessListener<Location>() {
                     @Override
-                     public void onSuccess(Location location) {
+                    public void onSuccess(Location location) {
 
                         if(location != null){
                             Geocoder geo = new Geocoder(getApplicationContext(),Locale.getDefault());
@@ -98,10 +106,9 @@ public class AddActivity extends AppCompatActivity {
                             Toast.makeText(AddActivity.this, result, Toast.LENGTH_LONG).show();
 
                             tv.setText(location.getLatitude() + " " + location.getLongitude());
+                        } else{
+                            Toast.makeText(AddActivity.this, "Please turn on the GPS", Toast.LENGTH_SHORT).show();
                         }
-                        else{
-                            Toast.makeText(AddActivity.this, "GPS Error", Toast.LENGTH_SHORT).show();
-                         }
                     }
                 });
             }
@@ -153,9 +160,7 @@ public class AddActivity extends AppCompatActivity {
                     Intent i = new Intent(AddActivity.this,HomeActivity.class);
                     startActivity(i);
 
-                }
-                else
-                {
+                } else {
                     toolPrice.setError("Price range 0-100");
                     Toast.makeText(AddActivity.this, "All the inputs required", Toast.LENGTH_SHORT).show();
                 }

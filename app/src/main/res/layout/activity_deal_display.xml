@@ -24,8 +24,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:textSize="25sp"
-        android:layout_marginBottom="20dp" />
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/txtEnd"
@@ -41,8 +42,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:textSize="25sp"
-        android:layout_marginBottom="20dp" />
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/txtTotal"
@@ -50,7 +52,7 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:layout_marginStart="10dp"
-        android:text="Total Price:"
+        android:text="Total Price (₪):"
         android:layout_marginLeft="10dp" />
 
     <TextView
@@ -58,7 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:textSize="25sp" />
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/txtStatus"
@@ -74,7 +78,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:textSize="25sp" />
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/txtTool"
@@ -90,7 +96,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:textSize="20sp" />
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:id="@+id/txtUser"
@@ -106,5 +114,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
+        android:textStyle="bold"
         android:textSize="20sp" />
 </LinearLayout>
