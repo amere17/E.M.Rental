@@ -1,21 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dialog_screen"
-    android:padding="1dp"
+    android:orientation="vertical"
+    android:background="#ECE5DD"
     tools:context=".OrderActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="385dp"
-        android:layout_height="274dp"
-        android:layout_marginTop="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ToolIV">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#128C7E"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:layout_gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:textStyle="normal|bold"
+            android:gravity="center"
+
+            />
+
+        <Button
+            android:id="@+id/delToolbtn"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/delete_button"
+            android:gravity="center"
+            android:layout_marginEnd="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/ToolIV"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            app:srcCompat="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/tName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAllCaps="false"
+            android:hint="name"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tType"
@@ -26,11 +77,12 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="16dp"
-            android:background="#8BC34A"
+            android:layout_marginTop="10dp"
             android:gravity="center"
-            android:textColor="#FFFFFF"
-            android:textSize="13dp"
+            android:hint="type"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -38,33 +90,16 @@
             app:layout_constraintTop_toBottomOf="@+id/tPrice" />
 
         <TextView
-            android:id="@+id/tName"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:background="#8BC34A"
-            android:gravity="center"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.102" />
-
-        <TextView
             android:id="@+id/tPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/paypal"
-            android:layout_marginTop="24dp"
-            android:background="#8BC34A"
+            android:layout_marginTop="10dp"
             android:gravity="center"
-            android:textColor="#FFFFFF"
-            android:textSize="13dp"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            android:hint="price"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -76,12 +111,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/tPrice"
-            android:layout_marginTop="56dp"
-            android:background="#8BC34A"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text=""
-            android:textColor="#FFFFFF"
-            android:textSize="13dp"
+            android:hint="location"
+            android:textColorHint="#000000"
+            android:textColor="#000000"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -91,11 +127,13 @@
         <TextView
             android:id="@+id/tOwner"
             android:layout_width="match_parent"
-            android:layout_height="17dp"
-            android:background="#8BC34A"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="#FFFFFF"
-            android:textSize="13dp"
+            android:textColor="#000000"
+            android:hint="owner"
+            android:textColorHint="#000000"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -108,86 +146,39 @@
             android:id="@+id/termsCB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:background="@color/cardview_dark_background"
             android:text="I Agree to Terms"
             android:textSize="18sp"
+            android:layout_marginTop="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tOwner" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <Button
-        android:id="@+id/delToolbtn"
-        android:layout_width="58dp"
-        android:layout_height="41dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/delete_button"
-        app:layout_constraintBottom_toTopOf="@+id/ToolIV"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.433" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Order"
-        android:textColor="#020201"
-        android:textSize="30sp"
-        android:textStyle="normal|bold"
-        app:layout_constraintBottom_toTopOf="@+id/ToolIV"
-        app:layout_constraintEnd_toStartOf="@+id/delToolbtn"
-        app:layout_constraintHorizontal_bias="0.508"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
+        android:layout_gravity="center"
         android:id="@+id/ShareBtn"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="55dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/button_share"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/delToolbtn"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="0.777" />
+        android:layout_marginTop="5dp"
+        android:background="@drawable/button_share" />
 
     <Button
         android:id="@+id/bOrder"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@drawable/order_button"
-        app:layout_constraintBottom_toTopOf="@+id/ShareBtn"
-        app:layout_constraintTop_toTopOf="@+id/StatusBtn"
-        app:layout_constraintVertical_bias="1.0"
-        tools:layout_editor_absoluteX="2dp" />
+        android:layout_width="286dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"
+        android:background="#0F6F54" />
 
     <Button
         android:id="@+id/StatusBtn"
         style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0F6F54"
-        app:layout_constraintBottom_toTopOf="@+id/ShareBtn"
-        app:layout_constraintEnd_toEndOf="@+id/bOrder"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="0.875" />
+        android:background="#075E54"
+        android:hint="Status" />
 
-    <ImageView
-        android:id="@+id/ToolIV"
-        android:layout_width="match_parent"
-        android:layout_height="189dp"
-        android:layout_marginBottom="424dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/logo" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

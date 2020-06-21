@@ -17,8 +17,9 @@
 
     <ImageView
         android:id="@+id/imgMyLocation"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginRight="10dp"
         android:onClick="getCurrentLocation"
         android:scaleType="fitXY"
         android:src="@drawable/current_location_button"
@@ -52,7 +53,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginStart="44dp"
             android:layout_marginLeft="45dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/profile" />
 
@@ -64,7 +65,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="45dp"
             android:layout_marginRight="45dp"
             android:layout_marginBottom="20dp"
@@ -74,8 +75,8 @@
 
     <Button
         android:id="@+id/button12"
-        android:layout_width="81dp"
-        android:layout_height="77dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:background="@drawable/add"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

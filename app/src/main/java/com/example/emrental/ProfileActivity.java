@@ -162,14 +162,20 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                 paypaltv.setText(documentSnapshot.getString("PayPal"));
                 rate = documentSnapshot.getString("rate");
                 ratetv.setText(rate + "/5");
-
-                final StorageReference reference = FirebaseStorage.getInstance().getReference().
+                final StorageReference reference;
+                reference = FirebaseStorage.getInstance().getReference().
                         child("ProfileImages").child(userId + ".jpeg");
+
                 reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        if(reference.getDownloadUrl()!=null)
+                        if (reference.getDownloadUrl() != null)
                             Glide.with(ProfileActivity.this).load(uri).into(pIV);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
                     }
                 });
 
@@ -219,8 +225,9 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     order = ds.getValue(Order.class);
-                    if ((order.getOwner().equals(userId) || order.getUser().equals(userId)) && order.getStatus().equals("D")) {
-                        mArraylist2.add("Total Price: " + order.getTotalPrice() + "\n" + "Date: " + order.getStart());
+                    if (order.getOwner().equals(userId) || order.getUser().equals(userId)) {
+                        mArraylist2.add("Total Price: " + order.getTotalPrice() + "\n" + "Date: " + order.getStart() +
+                                "\n" + "Status: " + CheckStatus(order.getStatus()));
                         vec2.addElement(ds.getKey());
                     }
 
@@ -260,7 +267,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
                     //closing this activity
                     finish();
                     //starting login activity
-                    Intent intToLogin = new Intent(ProfileActivity.this, LoginActivity.class);
+                    Intent intToLogin = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intToLogin);
                 }
 
@@ -274,6 +281,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             }
         });
 
+    }
+
+    private String CheckStatus(String status) {
+        if (status.equals("C"))
+            return "Payment Needed";
+        else if (status.equals("D"))
+            return "Payment Confirmed";
+        return "in Progress";
     }
 
     void openWhatsappContact(String number) {

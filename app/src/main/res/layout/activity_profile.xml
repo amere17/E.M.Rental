@@ -13,11 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Profile"
-        android:textColor="#020201"
+        android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:textStyle="normal|bold"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout2"
-        app:layout_constraintEnd_toStartOf="@+id/editProfile"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.172" />
@@ -53,8 +53,8 @@
 
         <Button
             android:id="@+id/editprofileimage"
-            android:layout_width="31dp"
-            android:layout_height="24dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_alignStart="@+id/profileIV"
             android:layout_alignLeft="@+id/profileIV"
             android:layout_alignEnd="@+id/profileIV"
@@ -85,9 +85,10 @@
 
     <Button
         android:id="@+id/editProfile"
-        android:layout_width="56dp"
-        android:layout_height="44dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:background="@drawable/edit_button"
+        android:textSize="8sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.947"
@@ -96,7 +97,7 @@
         app:layout_constraintVertical_bias="0.024"
         tools:ignore="MissingConstraints" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TableLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -104,68 +105,124 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rateResult">
 
-        <TextView
-            android:id="@+id/fullname"
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:textAllCaps="false"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/phone"
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
+                android:text="Name:" />
+
+            <TextView
+                android:id="@+id/fullname"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:textAllCaps="false"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </TableRow>
+
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_above="@+id/email"
-            android:gravity="center"
-            android:text=""
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/paypal" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/email"
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
+                android:text="Phone:" />
+
+            <TextView
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_above="@+id/email"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/paypal" />
+        </TableRow>
+
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_above="@+id/paypal"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/phone" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/paypal"
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
+                android:text="Email:" />
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_above="@+id/paypal"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/phone" />
+        </TableRow>
+
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="match_parent">
 
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fullname" />
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
+                android:text="PayPal:" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/paypal"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fullname" />
+        </TableRow>
+
+    </TableLayout>
 
     <TextView
         android:id="@+id/rateResult"
@@ -195,8 +252,8 @@
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
-                android:background="#4CAF50"
-                android:divider="@android:color/black"
+                android:background="#075E54"
+                android:divider="#075E54"
                 android:dividerPadding="8dp"
                 android:measureWithLargestChild="true" />
 
@@ -204,12 +261,14 @@
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#8BC34A">
+
+                android:background="#ECE5DD">
 
                 <LinearLayout
                     android:id="@+id/Tools"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="#128C7E"
                     android:orientation="vertical">
 
                     <ListView
@@ -217,7 +276,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:divider="@android:color/black"
+                        android:divider="#075E54"
                         android:dividerHeight="2dp"
                         android:footerDividersEnabled="true"
                         android:headerDividersEnabled="true"></ListView>
@@ -227,6 +286,7 @@
                     android:id="@+id/Deals"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="#128C7E"
                     android:orientation="vertical">
 
                     <ListView
@@ -234,7 +294,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:divider="@android:color/black"
+                        android:divider="#075E54"
                         android:dividerHeight="2dp"></ListView>
 
                 </LinearLayout>

@@ -62,9 +62,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
     public CollectionReference toolsList;
     FusedLocationProviderClient client;
-    public Location currLocation;
-    //boolean UserOwner= false;
-    //boolean hide = false;
+    public Location currLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +102,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         //------------- request permission for the location service -----------
         client = LocationServices.getFusedLocationProviderClient(this);
-        getCurrLocation();
         // ------------ Find the current user location ----------
-
+        getCurrLocation();
         // ------------ Methods for the view of the map ----------
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(HomeActivity.this);
@@ -120,6 +117,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onSuccess(Location location) {
                 currLocation = location;
+                getCurrentLocation();
             }
         });
     }
@@ -184,14 +182,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -200,7 +192,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void requestPer() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            getCurrentLocation();
+
+            return;
         } else {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 
@@ -214,6 +207,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    dialog.cancel();
                     startActivity(intent);
                 }
             });
@@ -228,12 +222,13 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             // Showing Alert Message
             alertDialog.show();
         }
+
     }
 
     // -------- Function to create icon for each type of tool --------
     public Bitmap icon_Bitmap(BitmapDrawable markerPath) {
-        int height = 300;
-        int width = 500;
+        int height = 200;
+        int width = 350;
         Bitmap b = markerPath.getBitmap();
         return Bitmap.createScaledBitmap(b, width, height, false);
     }
@@ -244,11 +239,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 8));
         } else {
             requestPer();
-            getCurrLocation();
         }
     }
 
     public void getCurrentLocation(View view) {
+        getCurrLocation();
+        ;
         getCurrentLocation();
     }
 }

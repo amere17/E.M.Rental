@@ -194,7 +194,7 @@ public class OrderActivity extends AppCompatActivity {
                     createDeal();
                     showNotificationOngoing(getBaseContext(), "E.M.Rental", "20 Minutes To PickUp The Tool\n" +
                             "Warning: Rental Time > 10 Hours = Total Price *2");
-                    send(mToolList.get("Owner"));
+                    send(mToolList.get("Owner"), "New Order");
                     getDiffDates();
                     StartNewActivity();
                 } else {
@@ -234,6 +234,7 @@ public class OrderActivity extends AppCompatActivity {
                                         Toast.makeText(OrderActivity.this,
                                                 "Done! Payout will appear in your PayPal Account", Toast.LENGTH_LONG).show();
                                     }
+                                    send(order.getUser(), "Please Pay For The Renter(click on Open Tool Page)");
 
                                 }
                                 StartNewActivity();
@@ -257,12 +258,12 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
-    private void send(String id) {
+    private void send(String id, final String msg) {
         FirebaseDatabase.getInstance().getReference().child("Tokens").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String usertoken = dataSnapshot.getValue(String.class).trim();
-                sendNotifications(usertoken, "E.M.Rental", "New Order");
+                sendNotifications(usertoken, "E.M.Rental", msg);
             }
 
             @Override
@@ -279,7 +280,8 @@ public class OrderActivity extends AppCompatActivity {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     order = ds.getValue(Order.class);
                     if (userIdB.equals(order.getUser())
-                            && (order.getStatus().trim().equals("C"))) {
+                            && (order.getStatus().trim().equals("C"))
+                            && order.getToolId().trim().equals(toolId.trim())) {
                         try {
                             String mstr = getTotal(formatter.parse(order.getEnd()),
                                     formatter.parse(order.getStart()), tPrice.getText().toString().trim());
@@ -293,7 +295,7 @@ public class OrderActivity extends AppCompatActivity {
                         i.putExtra("EndDate", order.getEnd());
                         i.putExtra("OwnerTool", order.getOwner());
                         i.putExtra("Total", order.getTotalPrice());
-                        ref.child(ds.getKey()).child("Status").setValue("D");
+                        i.putExtra("OrderId", ds.getKey());
                         startActivity(i);
                         finish();
                         break;
@@ -335,7 +337,7 @@ public class OrderActivity extends AppCompatActivity {
     }
 
     public void getDiffDates() {
-        new CountDownTimer(20000, 1000) {
+        new CountDownTimer(1200000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Log.v("OrderActivity", "Seconds Remaining:" + millisUntilFinished / 1000);

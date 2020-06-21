@@ -1,5 +1,5 @@
 package com.example.emrental.config;
-
+//----------------- PayPal Id Client ---------------------
 public final class Config {
-    public static final String PAYPAL_CLIENT_ID = "AdHwjUeJVQMhn_XTzALZysb2i74XQhRy3Ggroz4ArFjhQvfXc9J0aeox7iNOsu1bvBLqgHX0h8qEK5AQ";
+    public static final String PAYPAL_CLIENT_ID = "AQJE1KLRV63nlnUK3AFXnb6viA_7YkTKnAZg5EeMgVlVn0csdJNca55Q2ppqVSEfsq1o238TuZGIuRBI";
 }

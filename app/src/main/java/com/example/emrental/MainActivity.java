@@ -37,12 +37,13 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     // ----------------- Variables & Objects -------------------
     EditText emailId, passwordId, paypalId, fullnameId, phoneId;
-    Button signUpBtn,UpldPI;
-    TextView signIntv,PayPalCrt;
+    Button signUpBtn, UpldPI;
+    TextView signIntv, PayPalCrt;
     String userId;
     FirebaseAuth fbAuth;
     FirebaseFirestore fstore;
@@ -93,32 +94,47 @@ public class MainActivity extends AppCompatActivity {
                 fullname = fullnameId.getText().toString().trim();
                 phone = phoneId.getText().toString().trim();
                 paypal = paypalId.getText().toString().trim();
-
-                if (TextUtils.isEmpty(email) && email.contains("@")) {
+                boolean is_Valid = true;
+                if (TextUtils.isEmpty(email.trim())) {
                     emailId.setError("Email is Required.");
-                    return;
+                    is_Valid = false;
                 }
-                if (TextUtils.isEmpty(password)) {
+                if (!isEmail(email.trim())) {
+                    emailId.setError("Email is invalid");
+                    is_Valid = false;
+                }
+                if (TextUtils.isEmpty(password.trim())) {
                     passwordId.setError("Password is Required");
-                    return;
+                    is_Valid = false;
                 }
-                if (TextUtils.isEmpty(fullname)) {
+                if (TextUtils.isEmpty(fullname.trim())) {
                     fullnameId.setError("Full Name is Required");
-                    return;
+                    is_Valid = false;
                 }
-                if (TextUtils.isEmpty(paypal)) {
+                if (phone.trim().length() != 10 || phone.contains(" ")) {
+                    phoneId.setError("Phone Number must include 10 digits");
+                    is_Valid = false;
+                }
+                if (TextUtils.isEmpty(paypal.trim())) {
                     paypalId.setError("PayPal is Required");
                     Toast.makeText(MainActivity.this, "Create new PayPal Account", Toast.LENGTH_SHORT).show();
-                    return;
+                    is_Valid = false;
                 }
-                if (!paypal.contains("@")) {
-                    paypalId.setError("Invalid PayPal account");
-                    return;
+                if (!isFullname(fullname.trim())) {
+                    fullnameId.setError("Name is invalid");
+                    is_Valid = false;
                 }
-                if (password.length() < 8) {
+                if (!isEmail(paypal)) {
+                    paypalId.setError("Invalid PayPal Email");
+                    Toast.makeText(MainActivity.this, "Create new PayPal Account", Toast.LENGTH_SHORT).show();
+                    is_Valid = false;
+                }
+                if (password.trim().length() < 8) {
                     passwordId.setError("Password must be >= 8");
-                    return;
+                    is_Valid = false;
                 }
+                if (!is_Valid)
+                    return;
                 // ----------------------- add the new user data to the Firebase --------------
                 fbAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -136,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                             dr.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    FirebaseAuth.getInstance().signOut();
                                     Toast.makeText(MainActivity.this, "User Created.", Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(MainActivity.this, LoginActivity.class);
                                     startActivity(i);
@@ -159,6 +176,23 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    public static boolean isFullname(String str) {
+        String expression = "^[a-zA-Z\\s]+";
+        return str.matches(expression);
+    }
+
+    public static boolean isEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null)
+            return false;
+        return pat.matcher(email).matches();
     }
 
 }

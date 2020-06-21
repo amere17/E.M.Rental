@@ -114,23 +114,29 @@ public class AddActivity extends AppCompatActivity {
         Add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean validPrice = true;
                 String mUserUid = currentFirebaseUser.getUid();
                 String mToolName = toolName.getText().toString();
                 String mToolPrice = toolPrice.getText().toString();
                 int mRadioOpt = mType.getCheckedRadioButtonId();
                 radioButton = findViewById(mRadioOpt);
                 String m_location = tv.getText().toString();
+                if (!mToolPrice.isEmpty()) {
+                    int mPrice = Integer.parseInt(mToolPrice);
+                    if (mPrice > 100 || mPrice < 0)
+                        validPrice = false;
+                }
                 // Validation to add tool with the right inputs
-                if(!TextUtils.isEmpty(mToolName)&& !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location)&& radioButton.isChecked()){
+                if (!TextUtils.isEmpty(mToolName) && !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location) && radioButton.isChecked() && validPrice) {
 
                     // add new tool to realtime database and the collection firebase "tools"
-                    mToolList.put("name",mToolName);
-                    mToolList.put("price",mToolPrice);
-                    mToolList.put("userid",mUserUid);
-                    mToolList.put("type",radioButton.getText().toString());
-                    mToolList.put("location",tv.getText().toString());
-                    mToolList.put("status","1");
-                    mToolList.put("address",result);
+                    mToolList.put("name", mToolName);
+                    mToolList.put("price", mToolPrice);
+                    mToolList.put("userid", mUserUid);
+                    mToolList.put("type", radioButton.getText().toString());
+                    mToolList.put("location", tv.getText().toString());
+                    mToolList.put("status", "1");
+                    mToolList.put("address", result);
                     mFireStore.collection("tools").add(mToolList).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
@@ -150,14 +156,15 @@ public class AddActivity extends AppCompatActivity {
                 }
                 else
                 {
+                    toolPrice.setError("Price range 0-100");
                     Toast.makeText(AddActivity.this, "All the inputs required", Toast.LENGTH_SHORT).show();
-
                 }
             }
         });
     }
 
     //--- function to request permission for Location service ----
+
     private void requestPer(){
         ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION},1);

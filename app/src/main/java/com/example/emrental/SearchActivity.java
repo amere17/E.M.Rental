@@ -6,7 +6,6 @@ Subject: Activity to Earch for a tool from the list
 package com.example.emrental;
 //---------------- Android imports ------------------------
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -21,12 +20,16 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -35,6 +38,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Vector;
 
@@ -47,8 +51,10 @@ public class SearchActivity extends AppCompatActivity {
     DatabaseReference dr;
     FirebaseDatabase firebasedatabase;
     Tool item;
-    int min,max;
+    int min, max;
+    LatLng latLng;
     CheckBox cbBike, cbCar, cbScooter;
+    PlacesClient placesClient;
     Vector<String> cbTypes = new Vector<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
@@ -62,7 +68,7 @@ public class SearchActivity extends AppCompatActivity {
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         item = new Tool();
         etLocation = findViewById(R.id.editText5);
-        etPrice = (RangeSeekBar)findViewById(R.id.rangeSeekBar );
+        etPrice = (RangeSeekBar) findViewById(R.id.rangeSeekBar);
         searchBtnItems = findViewById(R.id.button2);
         lvItems = findViewById(R.id.m_tools);
         cbBike = findViewById(R.id.checkBox2);
@@ -70,15 +76,18 @@ public class SearchActivity extends AppCompatActivity {
         cbCar = findViewById(R.id.checkBox4);
         etPrice.setSelectedMaxValue(100);
         etPrice.setSelectedMinValue(0);
+        min = 0;
+        max = 100;
         etPrice.setOnRangeSeekBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangeListener() {
             @Override
             public void onRangeSeekBarValuesChanged(RangeSeekBar bar, Object minValue, Object maxValue) {
-                max = (int)bar.getSelectedMaxValue();
-                min = (int)bar.getSelectedMinValue();
-                Toast.makeText(getApplicationContext(), min+" "+max, Toast.LENGTH_SHORT).show();
+                max = (int) bar.getSelectedMaxValue();
+                min = (int) bar.getSelectedMinValue();
+                Toast.makeText(getApplicationContext(), min + " " + max, Toast.LENGTH_SHORT).show();
 
             }
         });
+
         final ArrayAdapter<String> itemArrayAdapter =
                 new ArrayAdapter<String>
                         (SearchActivity.this, android.R.layout.simple_list_item_1, mArraylist);

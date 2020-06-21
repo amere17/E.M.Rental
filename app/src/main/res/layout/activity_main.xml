@@ -1,15 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/register_screen"
-    tools:context=".MainActivity">
+    android:background="#ECE5DD"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#128C7E">
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="25dp"
+            android:text="Registration" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/relativeLayout4"
-        android:layout_width="419dp"
+        android:layout_width="match_parent"
         android:layout_height="386dp"
         android:layout_marginTop="16dp"
         android:clipToPadding="true"
@@ -61,12 +83,12 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/editText2"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="4dp"
+
             android:layout_marginBottom="30dp"
             android:ems="10"
             android:hint="Full Name"
-            android:inputType="textPersonName"
-            android:textColor="#CCCECE"
+            android:inputType="textEmailAddress"
+            android:textColor="#3C3F41"
             android:textColorHint="#0F6F54"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +105,7 @@
             android:layout_marginBottom="30dp"
             android:ems="10"
             android:hint="PayPal Email Account"
-            android:inputType="textPersonName"
+            android:inputType="textEmailAddress"
             android:textColorHint="#0F6F54"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.484"
@@ -110,19 +132,27 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editText9"
             app:layout_constraintVertical_bias="0.058" />
+
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/PayPaltv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:autoLink="web"
+        android:gravity="center"
+        android:text="Create PayPal Account"
+        android:textColor="#0F6F54"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="275dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="88dp"
-        android:background="@drawable/signup_button"
-        android:text="Sign Up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/signup_button" />
 
     <TextView
         android:id="@+id/textView"
@@ -131,7 +161,7 @@
         android:clickable="true"
         android:gravity="center"
         android:text="Already have an account? Sign In"
-        android:textColor="#4CAF50"
+        android:textColor="#075E54"
         android:textSize="24dip"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -142,21 +172,4 @@
         app:layout_constraintVertical_bias="0.34"
         tools:ignore="OnClick" />
 
-    <TextView
-        android:id="@+id/PayPaltv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:autoLink="web"
-        android:background="#FFFFFF"
-        android:gravity="center"
-        android:text="Create PayPal Account"
-        android:textColor="#009688"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

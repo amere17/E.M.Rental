@@ -14,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.emrental.config.Config;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -39,13 +41,15 @@ public class PaymentActivity extends AppCompatActivity {
     Date CurrDate;
     FirebaseFirestore fstore;
     DocumentReference dr;
+    DatabaseReference ref;
     TextView mOwner, mTotal, mStartDate, mEndDate, mCurrDate;
     Button mPay;
+    String m_OrderId;
     String m_Owner,OwnerEmail;
 
     public static final int PAYPAL_REQUEST_CODE = 7171;
     private static PayPalConfiguration config = new PayPalConfiguration()
-            .environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION)
+            .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
             .clientId(Config.PAYPAL_CLIENT_ID);
     float amount;
 
@@ -60,6 +64,7 @@ public class PaymentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_payment);
+        ref = FirebaseDatabase.getInstance().getReference().child("Deals");
         fstore = FirebaseFirestore.getInstance();
         mOwner = (TextView) findViewById(R.id.ownerTool);
         mTotal = (TextView) findViewById(R.id.totalPrice);
@@ -71,6 +76,7 @@ public class PaymentActivity extends AppCompatActivity {
         final String m_End = getIntent().getExtras().getString("EndDate");
         m_Owner = getIntent().getExtras().getString("OwnerTool");
         final String m_Total = getIntent().getExtras().getString("Total");
+        m_OrderId = getIntent().getExtras().getString("OrderId");
         CurrDate = Calendar.getInstance().getTime();
         String currTimeStr = simpleDate.format(CurrDate);
         mTotal.setText("Total Price: " + m_Total);
@@ -127,6 +133,7 @@ public class PaymentActivity extends AppCompatActivity {
                 PaymentConfirmation confirmation = data.getParcelableExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirmation != null) {
                     try {
+                        ref.child(m_OrderId).child("Status").setValue("D");
                         String paymentDetails = confirmation.toJSONObject().toString(4);
                         startActivity(new Intent(this, PaymentDetails.class)
                                 .putExtra("PaymentDetails", paymentDetails)

@@ -55,12 +55,6 @@ public class LoginActivity extends AppCompatActivity {
         passwordIdl = (EditText) findViewById(R.id.editText10);
         signInBtn = (Button) findViewById(R.id.button);
         signUptv = (TextView) findViewById(R.id.textView);
-        mAuthL = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser mFireU = fbAuth.getCurrentUser();
-            }
-        };
         //------------------------------ Sign In Button After Registration ---------------
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +70,12 @@ public class LoginActivity extends AppCompatActivity {
                     emailIdl.requestFocus();
                 } else if (!pssd.isEmpty() && !email.isEmpty()) {
                     // --------- Check the sign in inputs if it match's the data in Firebase -------
+                    mAuthL = new FirebaseAuth.AuthStateListener() {
+                        @Override
+                        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                            FirebaseUser mFireU = fbAuth.getCurrentUser();
+                        }
+                    };
                     fbAuth.signInWithEmailAndPassword(email, pssd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -113,11 +113,4 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference("Tokens").child(firebaseUser.getUid()).setValue(refreshToken);
     }
 
-    //--------------------- Function for Firebase Data ----------------------
-    protected void onStart() {
-        super.onStart();
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            fbAuth.addAuthStateListener(mAuthL);
-        }
-    }
 }
