@@ -33,6 +33,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+/**
+ * Login Activity -
+ * responsible for user login into the app (sign in)
+ */
 public class LoginActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
     public EditText emailIdl, passwordIdl;
@@ -41,6 +45,11 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth fbAuth;
     private FirebaseAuth.AuthStateListener mAuthL;
 
+    /**
+     * init members
+     *
+     * @param savedInstanceState last saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +66,15 @@ public class LoginActivity extends AppCompatActivity {
         signUptv = (TextView) findViewById(R.id.textView);
         //------------------------------ Sign In Button After Registration ---------------
         signInBtn.setOnClickListener(new View.OnClickListener() {
+
+            /**
+             * onClick listener of "Sign In" button
+             * collect data from input, check through
+             * validity using app tests then DB check
+             * if OK -> Sign In; else -> try again
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 String email = emailIdl.getText().toString();
@@ -95,12 +113,18 @@ public class LoginActivity extends AppCompatActivity {
         });
         //------------------- Button to move this activity to Sign Up Activity -------------------
         signUptv.setOnTouchListener(new View.OnTouchListener() {
+            /**
+             * Not registered -> move to Sign Up
+             *
+             * @param v     view
+             * @param event view
+             * @return false - placeholder (default by system)
+             */
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                ProgressDialog progressBar = ProgressDialog.show(LoginActivity.this, "Title",
-                        "Login Page");
                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(i);
+                finish();
                 return false;
             }
         });

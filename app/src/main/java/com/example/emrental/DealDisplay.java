@@ -27,12 +27,21 @@ import com.google.firebase.firestore.model.DocumentCollections;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+/**
+ * DealDisplay
+ * shows the deal details when clicked on the deals list in profile
+ */
 public class DealDisplay extends AppCompatActivity {
     TextView start, end, total, status, tenant, tool, tenantDec;
     DatabaseReference ref, ref2;
     FirebaseFirestore fstore;
     Order order = new Order();
 
+    /**
+     * onCreate: init members
+     *
+     * @param savedInstanceState last saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +59,11 @@ public class DealDisplay extends AppCompatActivity {
         tool = findViewById(R.id.dealTool);
         final String dealId = getIntent().getExtras().getString("DealId");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            /**
+             * read data from DB
+             *
+             * @param dataSnapshot data snapshot
+             */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -77,12 +91,17 @@ public class DealDisplay extends AppCompatActivity {
         });
     }
 
+    /**
+     * gets user data from DB
+     *
+     * @param user userID
+     */
     private void getUserData(String user) {
         fstore = FirebaseFirestore.getInstance();
         DocumentReference dr = fstore.collection("Users").document(user);
         dr.addSnapshotListener(DealDisplay.this, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@androidx.annotation.Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 String nameUser, phoneUser;
                 phoneUser = documentSnapshot.getString("Phone");
                 nameUser = documentSnapshot.getString("Full Name");
@@ -91,7 +110,11 @@ public class DealDisplay extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * gget tool data from DB
+     *
+     * @param toolId toolID
+     */
     private void getToolData(String toolId) {
         ref2.orderByChild(order.getToolId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -109,6 +132,12 @@ public class DealDisplay extends AppCompatActivity {
         });
     }
 
+    /**
+     * check deal stats
+     *
+     * @param status order status
+     * @return string of deal status
+     */
     private String CheckStatus(String status) {
         if (status.equals("C"))
             return "Payment Needed";

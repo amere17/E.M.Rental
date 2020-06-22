@@ -39,6 +39,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Main Activity - Registration Page
+ * collect data from user and creates a new account,
+ * if passed all the basic validations, in th DB
+ */
 public class MainActivity extends AppCompatActivity {
     // ----------------- Variables & Objects -------------------
     EditText emailId, passwordId, paypalId, fullnameId, phoneId;
@@ -48,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth fbAuth;
     FirebaseFirestore fstore;
 
+    /**
+     * init members
+     *
+     * @param savedInstanceState load last saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +65,12 @@ public class MainActivity extends AppCompatActivity {
 
         fbAuth = FirebaseAuth.getInstance();
         // --------------- Check if the user already signed in ------------
-        if (fbAuth.getCurrentUser() != null) {
-            startActivity(new Intent(MainActivity.this, HomeActivity.class));
-            finish();
+        try {
+            if (fbAuth.getCurrentUser() != null) {
+                startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                finish();
+            }
+        } catch (Exception e) {
         }
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
@@ -74,6 +87,11 @@ public class MainActivity extends AppCompatActivity {
         PayPalCrt = findViewById(R.id.PayPaltv);
         PayPalCrt.setMovementMethod(LinkMovementMethod.getInstance());
         PayPalCrt.setOnClickListener(new View.OnClickListener() {
+            /**
+             * onClick listener - create a new Paypal account if does't exist
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 Intent bIntent = new Intent(Intent.ACTION_VIEW);
@@ -85,6 +103,13 @@ public class MainActivity extends AppCompatActivity {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             String email, password, fullname, phone, paypal;
 
+            /**
+             * Sign Up - onClick listener
+             * collect data, check validity
+             * if OK-> create new account
+             *
+             * @param v view
+             */
             @Override
             // -------------- Sign Up inputs Validations ------------
             // -------------- If all inputs valid, move to login activity --------------
@@ -137,6 +162,11 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 // ----------------------- add the new user data to the Firebase --------------
                 fbAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                    /**
+                     * create a new user in the DB
+                     *
+                     * @param task task
+                     */
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -167,22 +197,43 @@ public class MainActivity extends AppCompatActivity {
         });
         // ------------------ Moving to the login page by Clicking the TextView------------------
         signIntv.setOnTouchListener(new View.OnTouchListener() {
+            /**
+             * Sign In textView listener
+             * already has an account
+             * move user to the login
+             *
+             * @param v     view
+             * @param event event
+             * @return false (default)
+             */
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                ProgressDialog progressBar = ProgressDialog.show(MainActivity.this, "Title",
-                        "Login Page");
                 Intent i = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(i);
+                finish();
                 return false;
             }
         });
     }
 
+    /**
+     * full name validator
+     * check if matches name pattern
+     *
+     * @param str name
+     * @return true if matches the pattern; else false
+     */
     public static boolean isFullname(String str) {
         String expression = "^[a-zA-Z\\s]+";
         return str.matches(expression);
     }
 
+    /**
+     * email validator
+     * check if matches email pattern
+     * @param email name
+     * @return true if matches the pattern; else false
+     */
     public static boolean isEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
                 "[a-zA-Z0-9_+&*-]+)*@" +

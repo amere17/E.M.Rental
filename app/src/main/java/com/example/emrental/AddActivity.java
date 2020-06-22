@@ -43,7 +43,8 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Add Activity
+ * Add Activity -
+ * Responsible for adding new tool
  */
 public class AddActivity extends AppCompatActivity {
     //----------------------- Variables & Objects -------------------
@@ -55,9 +56,13 @@ public class AddActivity extends AppCompatActivity {
     public String id;
     Map<String, String> mToolList = new HashMap<>();
     String result;
+    List<Address> list = null;
 
     /**
-     * @param savedInstanceState
+     * onCreate - first time creating class object of AddActivity
+     * gets location permissions, initializes members...
+     *
+     * @param savedInstanceState last saved instance state
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,37 +85,46 @@ public class AddActivity extends AppCompatActivity {
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         //----------------- Call function to request permission for Location service ---------
-        requestPer();
+        //requestPer();
         //----------------- Current location for the item to add a marker on the map -------
         Cord.setOnClickListener(new View.OnClickListener() {
+            /**
+             * get coordinates when clicked on get location button
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 if (ActivityCompat.checkSelfPermission(AddActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                client.getLastLocation().addOnSuccessListener(AddActivity.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
+                    Toast.makeText(AddActivity.this, "Please turn on the GPS", Toast.LENGTH_SHORT).show();
+                } else {
+                    client.getLastLocation().addOnSuccessListener(AddActivity.this, new OnSuccessListener<Location>() {
+                        /**
+                         * got the location successfully
+                         *
+                         * @param location
+                         */
+                        @Override
+                        public void onSuccess(Location location) {
 
-                        if(location != null){
-                            Geocoder geo = new Geocoder(getApplicationContext(),Locale.getDefault());
-                            Address address;
-                            List<Address> list = null;
-                            try {
-                                list = geo.getFromLocation(location.getLatitude(),location.getLongitude(),1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            if (location != null) {
+                                Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
+                                Address address;
+                                try {
+                                    list = geo.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                address = list.get(0);
+                                result = address.getAddressLine(0) + "\n" + address.getFeatureName();
+                                Toast.makeText(AddActivity.this, result, Toast.LENGTH_LONG).show();
+                                tv.setText(location.getLatitude() + " " + location.getLongitude());
+                            } else {
+                                Toast.makeText(AddActivity.this, "Please turn on the GPS", Toast.LENGTH_SHORT).show();
                             }
-                            address = list.get(0);
-                            result = address.getAddressLine(0) +"\n"+ address.getFeatureName();
-                            Toast.makeText(AddActivity.this, result, Toast.LENGTH_LONG).show();
-
-                            tv.setText(location.getLatitude() + " " + location.getLongitude());
-                        } else{
-                            Toast.makeText(AddActivity.this, "Please turn on the GPS", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         //----------------- Upload image for the tool -----------------
@@ -119,12 +133,18 @@ public class AddActivity extends AppCompatActivity {
         //-- add a new tool with all the info to the firebase database -
         ref = FirebaseDatabase.getInstance().getReference().child("tools");
         Add.setOnClickListener(new View.OnClickListener() {
+            /**
+             * onClick listener of the add tool button
+             * collect input data
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 boolean validPrice = true;
                 String mUserUid = currentFirebaseUser.getUid();
-                String mToolName = toolName.getText().toString();
-                String mToolPrice = toolPrice.getText().toString();
+                String mToolName = toolName.getText().toString().trim();
+                String mToolPrice = toolPrice.getText().toString().trim();
                 int mRadioOpt = mType.getCheckedRadioButtonId();
                 radioButton = findViewById(mRadioOpt);
                 String m_location = tv.getText().toString();
@@ -145,6 +165,11 @@ public class AddActivity extends AppCompatActivity {
                     mToolList.put("status", "1");
                     mToolList.put("address", result);
                     mFireStore.collection("tools").add(mToolList).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        /**
+                         * onSuccess listener - create new tool and save into the DB
+                         *
+                         * @param documentReference
+                         */
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Toast.makeText(AddActivity.this, "Tool Saved", Toast.LENGTH_SHORT).show();
@@ -157,7 +182,7 @@ public class AddActivity extends AppCompatActivity {
 
                     // Stop this activity and return to the Home Activity
                     finish();
-                    Intent i = new Intent(AddActivity.this,HomeActivity.class);
+                    Intent i = new Intent(AddActivity.this, HomeActivity.class);
                     startActivity(i);
 
                 } else {
@@ -170,6 +195,9 @@ public class AddActivity extends AppCompatActivity {
 
     //--- function to request permission for Location service ----
 
+    /**
+     * request GPS/Location permissions
+     */
     private void requestPer(){
         ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION},1);

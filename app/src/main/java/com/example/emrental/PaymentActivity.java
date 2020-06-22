@@ -35,6 +35,9 @@ import java.util.Date;
 
 import javax.annotation.Nullable;
 
+/**
+ * Payment Activity - based on PayPal ode
+ */
 public class PaymentActivity extends AppCompatActivity {
 
     SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -59,6 +62,11 @@ public class PaymentActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    /**
+     * init members
+     *
+     * @param savedInstanceState saved Instance State
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +115,11 @@ public class PaymentActivity extends AppCompatActivity {
             }, 3000);
         }
         mPay.setOnClickListener(new View.OnClickListener() {
+            /**
+             * manage payment process with PayPal
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 processPayment();
@@ -115,9 +128,12 @@ public class PaymentActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * paypal code
+     */
     private void processPayment() {
         PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)),
-                "ILS",mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
+                "ILS", mOwner.getText().toString(), PayPalPayment.PAYMENT_INTENT_SALE);
         payPalPayment.payeeEmail(mOwner.getText().toString().trim());
         Intent intent = new Intent(this, com.paypal.android.sdk.payments.PaymentActivity.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
@@ -126,6 +142,13 @@ public class PaymentActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * confirmation info
+     *
+     * @param requestCode request code
+     * @param resultCode  result code
+     * @param data        data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

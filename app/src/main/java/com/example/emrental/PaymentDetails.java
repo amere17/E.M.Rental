@@ -21,6 +21,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Payment Details Activity
+ * save and show payment details
+ */
 public class PaymentDetails extends AppCompatActivity {
 
     TextView textID, textAmount, textStatus;
@@ -31,6 +35,11 @@ public class PaymentDetails extends AppCompatActivity {
     User user;
     DocumentReference dr;
 
+    /**
+     * init members
+     *
+     * @param savedInstanceState saved Instance State
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +63,11 @@ public class PaymentDetails extends AppCompatActivity {
             e.printStackTrace();
         }
         submitBtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * collect rate, save new payment in th DB
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 final float rateR = rb.getRating();
@@ -100,6 +114,12 @@ public class PaymentDetails extends AppCompatActivity {
                 "Phone", mUser.getNumber(), "rate", mUser.getRate());
     }
 
+    /**
+     * show payment details
+     *
+     * @param response      json object
+     * @param paymentAmount payment amount
+     */
     private void showDetails(JSONObject response, String paymentAmount) {
         try {
             textID.setText(response.getString("id"));

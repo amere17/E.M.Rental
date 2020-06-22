@@ -73,7 +73,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
+/**
+ * Order Activity
+ * responsible for managing order through the whole process
+ */
 public class OrderActivity extends AppCompatActivity {
     private static final int TAKE_IMAGE_CODE = 1000;
     DatabaseReference ref, ref2;
@@ -95,6 +98,11 @@ public class OrderActivity extends AppCompatActivity {
     public String userIdA;
     Map<String, String> mToolList = new HashMap<>();
 
+    /**
+     * init members
+     *
+     * @param savedInstanceState load last saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,12 +126,22 @@ public class OrderActivity extends AppCompatActivity {
         tIV = findViewById(R.id.ToolIV);
         tTitle = findViewById(R.id.textView5);
         ShareBtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * share tool button onClick listener
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 Share();
             }
         });
         cb.setOnClickListener(new View.OnClickListener() {
+            /**
+             * check the terms
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 try {
@@ -165,6 +183,9 @@ public class OrderActivity extends AppCompatActivity {
                 }
             }
         });
+        /**
+         * tool image view onClick listener
+         */
         tIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,6 +206,13 @@ public class OrderActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        /**
+         * order button onClick listener
+         * check if accepted term,
+         * creates a new deal
+         * manages the order
+         */
         OrderBtn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -257,6 +285,12 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * sending notification
+     *
+     * @param id  user ID
+     * @param msg message
+     */
     private void send(String id, final String msg) {
         FirebaseDatabase.getInstance().getReference().child("Tokens").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -278,6 +312,9 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * update the order status
+     */
     void updateStatus() {
         String string = tPrice.getText().toString().trim();
         String[] parts = string.split(" ");
@@ -320,6 +357,14 @@ public class OrderActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * get the total price
+     *
+     * @param end   end date:time
+     * @param start start date:time
+     * @param price price
+     * @return string of total price
+     */
     public String getTotal(Date end, Date start, String price) {
         String str = null;
         double total;
@@ -339,12 +384,19 @@ public class OrderActivity extends AppCompatActivity {
         return str;
     }
 
+    /**
+     * automatic cancellation
+     * change tool status to available again if ot rented in 20min
+     */
     public void deleteDeal() {
         FirebaseDatabase.getInstance().getReference()
                 .child("Deals").child(dealId).removeValue();
         dr.update("status", "1");
     }
 
+    /**
+     * calculate renting time period using time difference
+     */
     public void getDiffDates() {
         new CountDownTimer(1200000, 1000) {
 
@@ -375,6 +427,9 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * delete selected tool (only by the owner)
+     */
     public void DeleteItem() {
         FirebaseDatabase.getInstance().getReference()
                 .child("tools").child(toolId).removeValue();
@@ -384,6 +439,11 @@ public class OrderActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    /**
+     * show the terms dialog
+     *
+     * @throws IOException IO exceptions
+     */
     public void termsDialog() throws IOException {
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(OrderActivity.this, R.style.Theme_AppCompat_Dialog_Alert);
         adBuilder.setTitle("Terms & Conditions");
@@ -398,6 +458,12 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * reading deal terms from file
+     *
+     * @return terms
+     * @throws IOException IO exceptions
+     */
     private String readFile() throws IOException {
         BufferedReader reader = null;
         String mLine, full = "";
@@ -415,6 +481,9 @@ public class OrderActivity extends AppCompatActivity {
         return full;
     }
 
+    /**
+     * share tool
+     */
     private void Share() {
         try {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -429,6 +498,11 @@ public class OrderActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * take image
+     *
+     * @param view view
+     */
     public void handleImageClick(View view) {
         Intent i1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
         if (i1.resolveActivity(getPackageManager()) != null)
@@ -436,6 +510,13 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * take image of tool
+     *
+     * @param requestCode request code
+     * @param resultCode  result code
+     * @param data        tool data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -464,6 +545,7 @@ public class OrderActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void getDownloadUrl(StorageReference reference) {
         reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -494,6 +576,11 @@ public class OrderActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * view screens according to user profile(renter/tenant)
+     *
+     * @param documentSnapshot firebase data
+     */
     private void setView(DocumentSnapshot documentSnapshot) {
         final StorageReference reference = FirebaseStorage.getInstance().getReference().
                 child("ToolImages").child(toolId + ".jpeg");
@@ -508,6 +595,8 @@ public class OrderActivity extends AppCompatActivity {
             OrderBtn.setVisibility(View.INVISIBLE);
             DeleteTool.setVisibility(View.VISIBLE);
             tTitle.setText("Admin Page");
+            Toast.makeText(OrderActivity.this,
+                    "Edit Tool Image By clicking on it", Toast.LENGTH_LONG).show();
             cb.setVisibility(View.INVISIBLE);
         } else {
             OrderBtn.setVisibility(View.VISIBLE);
@@ -538,6 +627,13 @@ public class OrderActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * responsible for displaying warning notification
+     *
+     * @param context activity
+     * @param title   notification title
+     * @param content message
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void showNotificationOngoing(Context context, String title, String content) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -565,6 +661,9 @@ public class OrderActivity extends AppCompatActivity {
         mNotifyMgr.notify(001, buildNotification);
     }
 
+    /**
+     * creates new deal and save it in the DB
+     */
     private void createDeal() {
         mToolList.put("Owner", userIdA);
         mToolList.put("User", userIdB);
@@ -577,6 +676,9 @@ public class OrderActivity extends AppCompatActivity {
         dr.update("status", "2");
     }
 
+    /**
+     * displays new activity
+     */
     private void StartNewActivity() {
         try {
             finish();
@@ -587,6 +689,13 @@ public class OrderActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * send notification
+     *
+     * @param usertoken user token
+     * @param title     activity title
+     * @param message   message
+     */
     public void sendNotifications(String usertoken, String title, String message) {
         Data data = new Data(title, message, userIdB, toolId, tName.getText().toString());
         NotificationSender sender = new NotificationSender(data, usertoken);

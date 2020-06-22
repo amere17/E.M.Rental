@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -54,8 +55,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import javax.annotation.Nullable;
 
 //-------------------- Main Activity for users after login ------------------
+
+/**
+ * Home Activity -
+ * main page, showing the map after logging in,
+ * map includes existed tools objects
+ * buttons of profile, search, add tool (+), my location
+ */
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "Error";
+    public static Activity fa;
     //------------- Variables & Objects -------------------
     GoogleMap mMap;
     Button AddToolBtn, ProfileBtn, SearchBtn;
@@ -65,6 +74,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     public Location currLocation = null;
     FirebaseAuth fAuth;
 
+    /**
+     * onCreate - init members and DB, check permissions
+     *
+     * @param savedInstanceState last saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +90,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         ProfileBtn = (Button) findViewById(R.id.button11);
         AddToolBtn = (Button) findViewById(R.id.button12);
         SearchBtn = (Button) findViewById(R.id.btnSearch);
-
+        fa = this;
         //-------------- method for User profile Button -------------
         ProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +125,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(HomeActivity.this);
     }
 
+    /**
+     * get current location
+     */
     private void getCurrLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -125,6 +142,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     // --------------- Show the tools form the list in firebase on the map ------------------
+
+    /**
+     * adding tool items on map when all is loaded and ready
+     *
+     * @param googleMap map
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -176,6 +199,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            /**
+             * show tool details when marker on map was clicked and opens OrderActivity
+             *
+             * @param marker item on map
+             * @return false - placeholder
+             */
             @Override
             public boolean onMarkerClick(Marker marker) {
                 final Intent i = new Intent(HomeActivity.this, OrderActivity.class);
@@ -191,6 +220,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setMyLocationEnabled(true);
     }
 
+    /**
+     * request location permissions
+     */
     private void requestPer() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -227,7 +259,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    // -------- Function to create icon for each type of tool --------
+    /**
+     * Function to create icon for each type of tool
+     *
+     * @param markerPath marker path
+     * @return bitmap icon
+     */
     public Bitmap icon_Bitmap(BitmapDrawable markerPath) {
         int height = 200;
         int width = 350;

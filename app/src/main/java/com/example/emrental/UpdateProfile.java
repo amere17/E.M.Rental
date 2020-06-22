@@ -16,10 +16,19 @@ import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
+/**
+ * Update Profile
+ */
 public class UpdateProfile extends AppCompatDialogFragment {
     private EditText ppedt, fnedt, pedt, emedt;
     private dialogListner listner;
 
+    /**
+     * init members
+     *
+     * @param savedInstanceState saved Instance State
+     * @return Dialog
+     */
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.drawable.dialog_rd);
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -52,6 +61,14 @@ public class UpdateProfile extends AppCompatDialogFragment {
         return builder.create();
     }
 
+    /**
+     * input validator
+     *
+     * @param ph phone number
+     * @param pp paypal email
+     * @param fn full name
+     * @return true if valid; else false
+     */
     private boolean validInputs(String ph, String pp, String fn) {
         if (ph.isEmpty() || ph.trim().length() != 10 || ph.contains(" ")) {
             pedt.setError("Invalid Phone Number");
@@ -80,11 +97,23 @@ public class UpdateProfile extends AppCompatDialogFragment {
         void applyTexts(String paypal, String fullname, String phone);
     }
 
+    /**
+     * full name validator
+     *
+     * @param str name
+     * @return true if valid; else false
+     */
     public static boolean isFullname(String str) {
         String expression = "^[a-zA-Z\\s]+";
         return str.matches(expression);
     }
 
+    /**
+     * email validator
+     *
+     * @param email name
+     * @return true if valid; else false
+     */
     public static boolean isEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." +
                 "[a-zA-Z0-9_+&*-]+)*@" +

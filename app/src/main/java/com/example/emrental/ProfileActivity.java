@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -64,6 +65,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+/**
+ * Profile Activity
+ * responsible of managing profile
+ */
 public class ProfileActivity extends AppCompatActivity implements UpdateProfile.dialogListner {
 
     //----------------------- Variables & Objects -------------------
@@ -84,7 +89,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
 
-
+    /**
+     * init members
+     *
+     * @param savedInstanceState saved Instance State
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +101,6 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         setContentView(R.layout.activity_profile);
         Bundle extraStr = getIntent().getExtras();
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
         String mString = "UserId";
         //-----------------  Attaching objects with XML file --------------
         phonetv = findViewById(R.id.phone);
@@ -122,11 +130,7 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         pIV.setImageResource(R.drawable.logo_green);
 
         if (extraStr == null || extraStr.getString(mString).equals(fAuth.getCurrentUser().getUid().trim())) {
-            try {
-                userId = fAuth.getCurrentUser().getUid();
-            } catch (Exception e) {
-
-            }
+            userId = fAuth.getCurrentUser().getUid();
         } else {
             userId = extraStr.getString(mString);
             logoutbtn.setVisibility(View.INVISIBLE);
@@ -137,6 +141,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             pIV.setEnabled(false);
         }
         edit.setOnClickListener(new View.OnClickListener() {
+            /**
+             * handle editing profile
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 Toast.makeText(ProfileActivity.this, "Update Your profile Image By Clicking on it", Toast.LENGTH_LONG).show();
@@ -147,6 +156,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
 
         });
         pIV.setOnClickListener(new View.OnClickListener() {
+            /**
+             * profile image handling
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 try {
@@ -203,6 +217,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         ref = FirebaseDatabase.getInstance().getReference("tools");
         ref2 = FirebaseDatabase.getInstance().getReference("Deals");
         toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            /**
+             * show user own tools
+             *
+             * @param queryDocumentSnapshots query Document Snapshots in list
+             */
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
@@ -216,6 +235,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             }
         });
         toolslv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /**
+             * show tools
+             *
+             * @param parent   list item
+             * @param view     list item
+             * @param position list item
+             * @param id       list item
+             */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(ProfileActivity.this, OrderActivity.class);
@@ -224,6 +251,14 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
             }
         });
         dealslv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            /**
+             * show deals
+             * @param parent list item
+             * @param view list item
+             * @param position list item
+             * @param id list item
+             * @return
+             */
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 mArraylist.remove(position);
@@ -270,23 +305,34 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
 
         //-------------- method for logout button -----------------
         logoutbtn.setOnClickListener(new View.OnClickListener() {
+            /**
+             * logout manager
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
 
                 FirebaseDatabase.getInstance().getReference()
                         .child("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).removeValue();
                 FirebaseAuth.getInstance().signOut();
-                if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
                     //closing this activity
                     //starting login activity
                     Intent intToLogin = new Intent(ProfileActivity.this, LoginActivity.class);
-                    finish();
+                    HomeActivity.fa.finish();
                     startActivity(intToLogin);
+                    finish();
                 }
 
             }
         });
         phonetv.setOnClickListener(new View.OnClickListener() {
+            /**
+             * chat  with user via whatsApp
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
                 if (!userId.equals(fAuth.getCurrentUser().getUid()))
@@ -296,6 +342,12 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
 
     }
 
+    /**
+     * user and payments status check
+     *
+     * @param status status
+     * @return
+     */
     private String CheckStatus(String status) {
         if (status.equals("C"))
             return "Payment Needed";
@@ -311,6 +363,9 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         startActivity(Intent.createChooser(i, "Hey, i interested in your rental tool"));
     }
 
+    /**
+     * open update profile dialog
+     */
     private void openDialog() {
         UpdateProfile update = new UpdateProfile();
         Bundle args = new Bundle();
@@ -322,6 +377,13 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         update.show(getSupportFragmentManager(), "Update profile");
     }
 
+    /**
+     * update profile details from user input
+     *
+     * @param paypal   paypal email
+     * @param fullname user name
+     * @param phone    phone number
+     */
     @Override
     public void applyTexts(String paypal, String fullname, String phone) {
         Map<String, String> userData = new HashMap<>();
@@ -341,6 +403,10 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         });
     }
 
+    /**
+     * uploading profile image
+     * @param view view
+     */
     public void handleImageClick(View view) {
         Intent i1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
         if (i1.resolveActivity(getPackageManager()) != null)

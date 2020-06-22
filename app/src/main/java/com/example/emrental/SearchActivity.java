@@ -42,6 +42,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Vector;
 
+/**
+ * Search Activity
+ * responsible for searching tools
+ */
 public class SearchActivity extends AppCompatActivity {
     //-------------------- Variables & Objects -------------------
     EditText etLocation;
@@ -59,6 +63,12 @@ public class SearchActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");
     RangeSeekBar etPrice;
+
+    /**
+     * init members
+     *
+     * @param savedInstanceState saved Instance State
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +89,13 @@ public class SearchActivity extends AppCompatActivity {
         min = 0;
         max = 100;
         etPrice.setOnRangeSeekBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangeListener() {
+            /**
+             * get price range from bar
+             *
+             * @param bar      bar
+             * @param minValue min value
+             * @param maxValue max value
+             */
             @Override
             public void onRangeSeekBarValuesChanged(RangeSeekBar bar, Object minValue, Object maxValue) {
                 max = (int) bar.getSelectedMaxValue();
@@ -98,36 +115,45 @@ public class SearchActivity extends AppCompatActivity {
         // ---------------------- Display tool list -------------------
         // ------------- Next Task: Filtering the list by user inputs -----------
         searchBtnItems.setOnClickListener(new View.OnClickListener() {
+            /**
+             * collect and search item aording to user input
+             *
+             * @param v view
+             */
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), min+" "+max, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), min + " " + max, Toast.LENGTH_LONG).show();
                 cbTypes.clear();
                 mArraylist.clear();
                 fillVecTypes();
-        final Vector vec = new Vector<>();
-        toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    Map<String, Object> d = documentSnapshot.getData();
-                    if((TypeOn(d.get("type").toString().trim()) && Double.valueOf(d.get("price").toString())>min
-                            && Double.valueOf(d.get("price").toString())<max)
-                            || cbTypes.isEmpty()) {
-                        vec.addElement(documentSnapshot.getId());
-                        mArraylist.add(d.get("name") + "\n" + d.get("price") + " ₪/hr\n" + d.get("type") + "\n" + d.get("address"));
+                final Vector vec = new Vector<>();
+                toolsList.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    /**
+                     * show results
+                     * @param queryDocumentSnapshots query Document Snapshots
+                     */
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Map<String, Object> d = documentSnapshot.getData();
+                            if ((TypeOn(d.get("type").toString().trim()) && Double.valueOf(d.get("price").toString()) > min
+                                    && Double.valueOf(d.get("price").toString()) < max)
+                                    || cbTypes.isEmpty()) {
+                                vec.addElement(documentSnapshot.getId());
+                                mArraylist.add(d.get("name") + "\n" + d.get("price") + " ₪/hr\n" + d.get("type") + "\n" + d.get("address"));
+                            }
+                        }
+                        lvItems.setAdapter(itemArrayAdapter);
                     }
-                }
-                lvItems.setAdapter(itemArrayAdapter);
-            }
-        });
-        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(SearchActivity.this, OrderActivity.class);
-                i.putExtra("ToolId", vec.elementAt(position).toString());
-                startActivity(i);
-            }
-        });
+                });
+                lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent i = new Intent(SearchActivity.this, OrderActivity.class);
+                        i.putExtra("ToolId", vec.elementAt(position).toString());
+                        startActivity(i);
+                    }
+                });
             }
         });
     }
@@ -137,8 +163,9 @@ public class SearchActivity extends AppCompatActivity {
             if(toolType.trim().equals(type.trim()))
                 return true;
 
-            return false;
+        return false;
     }
+
     private void fillVecTypes(){
         if(cbBike.isChecked())
             cbTypes.addElement(cbBike.getText().toString().trim());
