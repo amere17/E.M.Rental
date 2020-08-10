@@ -1,7 +1,6 @@
 package com.example.emrental;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import android.app.AlertDialog;
@@ -12,15 +11,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
-
 import java.util.regex.Pattern;
 
 /**
  * Update Profile
  */
 public class UpdateProfile extends AppCompatDialogFragment {
-    private EditText ppedt, fnedt, pedt, emedt;
+    private EditText ppedt, fnedt, pedt;
     private dialogListner listner;
 
     /**

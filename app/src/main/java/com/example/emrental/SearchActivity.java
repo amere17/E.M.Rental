@@ -19,26 +19,15 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import org.florescu.android.rangeseekbar.RangeSeekBar;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Vector;
 
@@ -56,9 +45,7 @@ public class SearchActivity extends AppCompatActivity {
     FirebaseDatabase firebasedatabase;
     Tool item;
     int min, max;
-    LatLng latLng;
     CheckBox cbBike, cbCar, cbScooter;
-    PlacesClient placesClient;
     Vector<String> cbTypes = new Vector<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference toolsList = db.collection("tools");

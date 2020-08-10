@@ -3,16 +3,10 @@ package com.example.emrental;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,9 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.model.DocumentCollections;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+
 
 /**
  * DealDisplay
@@ -111,17 +103,18 @@ public class DealDisplay extends AppCompatActivity {
     }
 
     /**
-     * gget tool data from DB
+     * gets tool data from DB
      *
      * @param toolId toolID
      */
-    private void getToolData(String toolId) {
-        ref2.orderByChild(order.getToolId()).addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getToolData(final String toolId) {
+        ref2.orderByChild(toolId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Tool toolc = postSnapshot.getValue(Tool.class);
-                    tool.setText("Tool Name: " + toolc.getName() + "\nTool Type: " + toolc.getType());
+                    if (postSnapshot.getKey().equals(toolId))
+                        tool.setText("Tool Name: " + toolc.getName() + "\nTool Type: " + toolc.getType());
                 }
             }
 

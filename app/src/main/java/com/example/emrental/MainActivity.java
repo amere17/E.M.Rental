@@ -9,7 +9,7 @@ package com.example.emrental;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ProgressDialog;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,12 +29,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.iid.FirebaseInstanceId;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -47,7 +43,7 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity {
     // ----------------- Variables & Objects -------------------
     EditText emailId, passwordId, paypalId, fullnameId, phoneId;
-    Button signUpBtn, UpldPI;
+    Button signUpBtn;
     TextView signIntv, PayPalCrt;
     String userId;
     FirebaseAuth fbAuth;

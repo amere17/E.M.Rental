@@ -154,7 +154,8 @@ public class AddActivity extends AppCompatActivity {
                         validPrice = false;
                 }
                 // Validation to add tool with the right inputs
-                if (!TextUtils.isEmpty(mToolName) && !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location) && radioButton.isChecked() && validPrice) {
+                if (!TextUtils.isEmpty(mToolName) && !TextUtils.isEmpty(mToolPrice) && !TextUtils.isEmpty(m_location)
+                        && radioButton.isChecked() && validPrice) {
 
                     // add new tool to realtime database and the collection firebase "tools"
                     mToolList.put("name", mToolName);

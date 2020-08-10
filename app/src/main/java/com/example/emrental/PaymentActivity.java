@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -48,7 +47,7 @@ public class PaymentActivity extends AppCompatActivity {
     TextView mOwner, mTotal, mStartDate, mEndDate, mCurrDate;
     Button mPay;
     String m_OrderId;
-    String m_Owner,OwnerEmail;
+    String m_Owner;
 
     public static final int PAYPAL_REQUEST_CODE = 7171;
     private static PayPalConfiguration config = new PayPalConfiguration()
@@ -154,7 +153,8 @@ public class PaymentActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PAYPAL_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                PaymentConfirmation confirmation = data.getParcelableExtra(com.paypal.android.sdk.payments.PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                PaymentConfirmation confirmation = data.getParcelableExtra(com.paypal.android.sdk.payments.
+                        PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if (confirmation != null) {
                     try {
                         ref.child(m_OrderId).child("Status").setValue("D");
@@ -162,7 +162,7 @@ public class PaymentActivity extends AppCompatActivity {
                         startActivity(new Intent(this, PaymentDetails.class)
                                 .putExtra("PaymentDetails", paymentDetails)
                                 .putExtra("PaymentAmount", String.valueOf(amount))
-                                .putExtra("Owner",m_Owner)
+                                .putExtra("Owner", m_Owner)
                         );
                     } catch (JSONException e) {
                         e.printStackTrace();

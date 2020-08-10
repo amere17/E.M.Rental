@@ -11,11 +11,8 @@ package com.example.emrental;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,12 +26,7 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +36,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.PropertyName;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -57,9 +48,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import java.io.ByteArrayOutputStream;
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +61,7 @@ import java.util.Vector;
 public class ProfileActivity extends AppCompatActivity implements UpdateProfile.dialogListner {
 
     //----------------------- Variables & Objects -------------------
-    TextView phonetv, emailtv, fullnametv, paypaltv, ratetv, dealtv;
+    TextView phonetv, emailtv, fullnametv, paypaltv, ratetv;
     Button logoutbtn, edit, editProfileImage;
     ListView dealslv, toolslv;
     FirebaseFirestore fstore;
@@ -356,6 +345,11 @@ public class ProfileActivity extends AppCompatActivity implements UpdateProfile.
         return "in Progress";
     }
 
+    /**
+     * Start new conversation
+     *
+     * @param number Contact number
+     */
     void openWhatsappContact(String number) {
         Uri uri = Uri.parse("smsto:" + number);
         Intent i = new Intent(Intent.ACTION_SENDTO, uri);

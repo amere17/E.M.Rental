@@ -72,7 +72,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     public CollectionReference toolsList;
     FusedLocationProviderClient client;
     public Location currLocation = null;
-    FirebaseAuth fAuth;
 
     /**
      * onCreate - init members and DB, check permissions
